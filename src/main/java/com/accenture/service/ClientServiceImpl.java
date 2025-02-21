@@ -6,9 +6,11 @@ import com.accenture.repository.entity.utilisateur.Client;
 import com.accenture.service.dto.ClientRequestDto;
 import com.accenture.service.dto.ClientResponseDto;
 import com.accenture.service.mapper.ClientMapper;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 
 @Service
@@ -25,11 +27,25 @@ public class ClientServiceImpl implements ClientService{
     }
 
     @Override
-    public ClientResponseDto ajouter(ClientRequestDto clientRequestDto) {
+    public ClientResponseDto ajouter(ClientRequestDto clientRequestDto) throws ClientException {
         verifierClient(clientRequestDto);
         Client client = clientMapper.toClient(clientRequestDto);
         Client clientEnreg = clientDao.save(client);
         return clientMapper.toClientResponseDto(clientEnreg);
+    }
+
+
+    @Override
+    public ClientResponseDto verifierEtTrouver(String email, String password) throws EntityNotFoundException {
+        Optional<Client> optClient = clientDao.findByEmail(email);
+        ClientResponseDto clientResponseDto;
+        if(optClient.isEmpty())
+            throw new EntityNotFoundException("Impossible à trouver le mail");
+        else if(optClient.get().getPassword().equals(password))
+            clientResponseDto = clientMapper.toClientResponseDto(optClient.get());
+        else
+            throw new EntityNotFoundException("Saisie de mot de passe est incorrecte");
+        return clientResponseDto;
     }
 
 //    @Override
@@ -40,8 +56,7 @@ public class ClientServiceImpl implements ClientService{
 
     private static void verifierClient(ClientRequestDto dto) throws ClientException{
 
-        //TODO; control de email, password, dateNaissance est bon ou pas
-        //TODO: erreur toutes les situations à tester
+        //TODO; controller de permis ?????
         if (dto == null)
             throw new ClientException("le clientRequestDto est nulle");
         if (dto.nom() == null || dto.nom().trim().isBlank())
@@ -55,7 +70,7 @@ public class ClientServiceImpl implements ClientService{
         if(dto.adresse() == null){
             throw new ClientException("l'adresse du client est absent");
         }
-        if(dto.adresse().rue() == null || dto.adresse().rue().trim().isBlank()){
+        if(dto.adresse().rue()== null || dto.adresse().rue().trim().isBlank()){
             throw new ClientException("la rue du client est absent");
         }
         if(dto.adresse().codePostal() == null || dto.adresse().codePostal().trim().isBlank()){
@@ -69,11 +84,9 @@ public class ClientServiceImpl implements ClientService{
         }
         int nouvelleAnnee = dto.dateNaissance().getYear()+18;
         LocalDate nouvelleDate = LocalDate.of(nouvelleAnnee, dto.dateNaissance().getMonth(), dto.dateNaissance().getDayOfMonth());
-        if(nouvelleDate.isBefore(LocalDate.now())){
+        if(nouvelleDate.isAfter(LocalDate.now())){
             throw new ClientException("pour vous inscrire sur notre site, il faut au moins 18 ans");
         }
-        if (dto.listePermis() == null || dto.listePermis().isEmpty())
-            throw new ClientException("la liste de permis du client est absent");
 
 
     }

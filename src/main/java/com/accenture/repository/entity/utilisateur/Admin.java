@@ -1,6 +1,7 @@
 package com.accenture.repository.entity.utilisateur;
 
 
+import jakarta.persistence.Column;
 import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -15,8 +16,9 @@ import lombok.ToString;
 @DiscriminatorValue("A")
 @ToString(callSuper = true)
 public class Admin extends UtilisateurConnecte{
-
+    @Column(nullable=false)
     private String fonction;
-
+    @Column(nullable=false)
+    private String role = "ROLE_ADMIN";
 
 }

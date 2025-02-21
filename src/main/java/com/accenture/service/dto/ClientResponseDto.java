@@ -1,7 +1,6 @@
 package com.accenture.service.dto;
 
 import com.accenture.model.Permis;
-import com.accenture.repository.entity.utilisateur.Adresse;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -11,11 +10,9 @@ public record ClientResponseDto (
         String nom,
         String prenom,
         String email,
-        String password,
-        AdresseResponseDto adresse,
+        AdresseDto adresse,
         LocalDate dateNaissance,
         LocalDate dateInscription,
-        List<Permis> listePermis,
-        boolean desative
+        List<Permis> listePermis
 ){
 }

@@ -2,7 +2,7 @@ package com.accenture.service.dto;
 
 import jakarta.validation.constraints.NotBlank;
 
-public record AdresseRequestDto(
+public record AdresseDto(
         @NotBlank(message = "La rue est obligatoire")
         String rue,
         @NotBlank(message = "Le code postal est obligatoire")

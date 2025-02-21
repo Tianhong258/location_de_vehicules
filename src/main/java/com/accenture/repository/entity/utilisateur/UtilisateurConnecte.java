@@ -15,10 +15,13 @@ public abstract class UtilisateurConnecte {
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE)
     private long id;
+    @Column(nullable=false)
     private String nom;
+    @Column(nullable=false)
     private String prenom;
-    @Column(unique = true)//TODO: à tester
+    @Column(unique = true, nullable=false)
     private String email;
+    @Column(nullable=false)
     private String password;
 
 }

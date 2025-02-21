@@ -1,14 +1,12 @@
 package com.accenture.controller;
 
 import com.accenture.service.ClientService;
+import com.accenture.service.dto.AdminResponseDto;
 import com.accenture.service.dto.ClientRequestDto;
 import com.accenture.service.dto.ClientResponseDto;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
@@ -31,6 +29,12 @@ public class ClientController {
                 .buildAndExpand(clientEnreg.id())
                 .toUri();
         return ResponseEntity.created(location).build();
+    }
+
+    @GetMapping
+    ResponseEntity<ClientResponseDto> connecter(@RequestParam String email, @RequestParam String password){
+        ClientResponseDto trouve = clientService.verifierEtTrouver(email, password);
+        return ResponseEntity.ok(trouve);
     }
 
 }
