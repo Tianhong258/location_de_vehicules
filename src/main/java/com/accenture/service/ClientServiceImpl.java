@@ -1,5 +1,6 @@
 package com.accenture.service;
 
+
 import com.accenture.exception.ClientException;
 import com.accenture.repository.ClientDao;
 import com.accenture.repository.entity.utilisateur.Client;
@@ -8,8 +9,8 @@ import com.accenture.service.dto.ClientResponseDto;
 import com.accenture.service.mapper.ClientMapper;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
-
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -34,29 +35,53 @@ public class ClientServiceImpl implements ClientService{
         return clientMapper.toClientResponseDto(clientEnreg);
     }
 
+    @Override
+    public ClientResponseDto trouver(String email, String password) throws EntityNotFoundException {
+        Client client = verifierEmailPassword(email,password);
+        return clientMapper.toClientResponseDto(client);
+    }//TODO : refaire un peu test
+
+
 
     @Override
-    public ClientResponseDto verifierEtTrouver(String email, String password) throws EntityNotFoundException {
-        Optional<Client> optClient = clientDao.findByEmail(email);
-        ClientResponseDto clientResponseDto;
-        if(optClient.isEmpty())
-            throw new EntityNotFoundException("Impossible à trouver le mail");
-        else if(optClient.get().getPassword().equals(password))
-            clientResponseDto = clientMapper.toClientResponseDto(optClient.get());
-        else
-            throw new EntityNotFoundException("Saisie de mot de passe est incorrecte");
-        return clientResponseDto;
+    public List<ClientResponseDto> trouverTous() {
+        return clientDao.findAll()
+                .stream()
+                .map(clientMapper::toClientResponseDto)
+                .toList();
     }
 
-//    @Override
-//    public List<ClientResponseDto> liste() {
-//        return List.of();
-//    }
+    @Override
+    public void desactiverOuSupprimer(String email, String password) throws ClientException,EntityNotFoundException {
+        Client client = verifierEmailPassword(email, password);
+        //trouver les locations, s'il y a pas
+        // l'utilisateur peut supprimer son compte : créer supprimer() et desactiver()
+        client.setDesactive(true);
+        clientDao.save(client);
+        //clientDao.deleteByEmail(clientResponseDto.email());
+    }
 
+    @Override
+    public ClientResponseDto modifier(String email, String password, ClientRequestDto clientRequestDto) throws ClientException,EntityNotFoundException {
+        Client client = verifierEmailPassword(email, password);
+        Client clientModifie = clientMapper.toClient(clientRequestDto);
+        clientModifie.setId(client.getId());
+        clientDao.save(clientModifie);
+        return clientMapper.toClientResponseDto(clientModifie);
+        //TODO : Il n'est pas content, je dois faire void pour vérifier la connection ?
+    }
+
+
+    private Client verifierEmailPassword(String email, String password) throws EntityNotFoundException{
+        Optional<Client> optClient = clientDao.findByEmailAndPassword(email, password);
+        if(optClient.isEmpty())
+            throw new EntityNotFoundException("Email n'existe pas ou password ne correspond pas");
+        return optClient.get();
+    }
 
     private static void verifierClient(ClientRequestDto dto) throws ClientException{
 
-        //TODO; controller de permis ?????
+        //TODO: controller de permis ?????
         if (dto == null)
             throw new ClientException("le clientRequestDto est nulle");
         if (dto.nom() == null || dto.nom().trim().isBlank())

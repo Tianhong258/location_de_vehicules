@@ -1,26 +1,27 @@
-package com.accenture.repository.entity.utilisateur;
+package com.accenture.repository.entity.vehicule;
 
 
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
 @Data
 @NoArgsConstructor
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @DiscriminatorColumn(name = "DISCR")
-public abstract class UtilisateurConnecte {
+public class Vehicule {
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE)
     private long id;
     @Column(nullable=false)
-    private String nom;
+    private String marque;
     @Column(nullable=false)
-    private String prenom;
-    @Column(unique = true, nullable=false)
-    private String email;
+    private String modele;
     @Column(nullable=false)
-    private String password;
+    private String couleur;
+
+
 
 }

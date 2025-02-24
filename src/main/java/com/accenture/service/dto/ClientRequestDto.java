@@ -1,7 +1,6 @@
 package com.accenture.service.dto;
 
 import com.accenture.model.Permis;
-import com.accenture.repository.entity.utilisateur.Adresse;
 import jakarta.validation.constraints.*;
 
 import java.time.LocalDate;

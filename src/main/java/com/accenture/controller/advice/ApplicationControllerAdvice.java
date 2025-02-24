@@ -1,5 +1,6 @@
 package com.accenture.controller.advice;
 
+import com.accenture.exception.AdminException;
 import com.accenture.exception.ClientException;
 import com.accenture.model.ErreurReponse;
 import jakarta.persistence.EntityNotFoundException;
@@ -17,11 +18,16 @@ import java.util.stream.Collectors;
 @RestControllerAdvice
 public class ApplicationControllerAdvice {
     @ExceptionHandler(ClientException.class)
-    public ResponseEntity<ErreurReponse> gestionTacheException(ClientException ex){
+    public ResponseEntity<ErreurReponse> gestionClientException(ClientException ex){
         ErreurReponse er = new ErreurReponse(LocalDateTime.now(), "Erreur fonctionnelle", ex.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(er);
     }
 
+    @ExceptionHandler(AdminException.class)
+    public ResponseEntity<ErreurReponse> gestionAdminException(AdminException ex){
+        ErreurReponse er = new ErreurReponse(LocalDateTime.now(), "Erreur fonctionnelle", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(er);
+    }
 
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ErreurReponse> entityNotFoundException(EntityNotFoundException ex){

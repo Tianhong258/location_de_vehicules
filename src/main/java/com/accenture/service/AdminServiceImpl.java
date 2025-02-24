@@ -25,6 +25,12 @@ public class AdminServiceImpl implements AdminService{
         this.adminMapper = adminMapper;
     }
 
+    /**
+     * <p> La méthode </p>
+     * @param adminRequestDto
+     * @return adminResponseDto
+     * @throws AdminException
+     */
 
     @Override
     public AdminResponseDto ajouter(AdminRequestDto adminRequestDto) throws AdminException {
@@ -34,28 +40,50 @@ public class AdminServiceImpl implements AdminService{
         return adminMapper.toAdminResponseDto(adminEnreg);
     }
 
-
+    @Override
+    public AdminResponseDto trouver(String email, String password) throws AdminException, EntityNotFoundException {
+        Admin admin = verifierEmailPassword(email, password);
+        return adminMapper.toAdminResponseDto(admin);
+    }
 
     @Override
-    public AdminResponseDto verifierEtTrouver(String email, String password) throws EntityNotFoundException {
-        Optional<Admin> optAdmin = adminDao.findByEmail(email);
-        AdminResponseDto adminResponseDto;
-        if(optAdmin.isEmpty())
-            throw new EntityNotFoundException("Impossible à trouver le mail");
-        else if(optAdmin.get().getPassword().equals(password))
-            adminResponseDto = adminMapper.toAdminResponseDto(optAdmin.get());
+    public List<AdminResponseDto> trouverTous() {
+        return adminDao.findAll()
+                .stream()
+                .map(adminMapper::toAdminResponseDto)
+                .toList();
+    }
+
+    @Override
+    public void supprimer(String email, String password) throws EntityNotFoundException, AdminException {
+        Admin admin = verifierEmailPassword(email, password);
+        if(adminDao.count() > 1)
+            adminDao.delete(admin);
         else
-            throw new EntityNotFoundException("Saisie de mot de passe est incorrecte");
-        return adminResponseDto;
+            throw new AdminException("Interdit de supprimer le compte du dernier administrateur ! ");
     }
 
     @Override
-    public List<AdminResponseDto> liste() {
-        return List.of();
+    public AdminResponseDto modifier(String email, String password, AdminRequestDto adminRequestDto ) throws EntityNotFoundException, AdminException {
+        Admin admin = verifierEmailPassword(email, password);
+        verifierAdmin(adminRequestDto);
+        Admin adminModifie = adminMapper.toAdmin(adminRequestDto);
+        adminModifie.setId(admin.getId());
+        adminDao.save(adminModifie);
+        return adminMapper.toAdminResponseDto(adminModifie);
     }
+
+
+    private Admin verifierEmailPassword(String email, String password) throws AdminException, EntityNotFoundException{
+        Optional<Admin> optAdmin = adminDao.findByEmailAndPassword(email, password);
+        if(optAdmin.isEmpty())
+            throw new EntityNotFoundException("Email n'existe pas ou password ne correspond pas");
+        return optAdmin.get();
+    }
+
 
     private static void verifierAdmin(AdminRequestDto dto) throws AdminException {
-        //TODO; control de email, password, dateNaissance est bon ou pas
+        //TODO: control de email, password, dateNaissance est bon ou pas
         if (dto == null)
             throw new AdminException("l'adminRequestDto est nulle");
         if (dto.nom() == null || dto.nom().trim().isBlank())
