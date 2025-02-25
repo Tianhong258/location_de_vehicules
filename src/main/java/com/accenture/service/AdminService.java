@@ -17,5 +17,6 @@ public interface AdminService {
 
     AdminResponseDto modifier(String email, String password, AdminRequestDto adminRequestDto) throws EntityNotFoundException, AdminException;
 
+    AdminResponseDto modifierPartiellement(String email, String password, AdminRequestDto adminRequestDto) throws AdminException, EntityNotFoundException;
 
 }

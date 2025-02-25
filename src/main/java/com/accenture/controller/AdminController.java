@@ -1,6 +1,7 @@
 package com.accenture.controller;
 
 
+import com.accenture.repository.entity.utilisateur.Admin;
 import com.accenture.service.AdminService;
 import com.accenture.service.dto.AdminRequestDto;
 import com.accenture.service.dto.AdminResponseDto;
@@ -71,4 +72,15 @@ public class AdminController {
         AdminResponseDto reponse = adminService.modifier(email, password, adminRequestDto);
         return ResponseEntity.ok(reponse);
     }
+
+    @PatchMapping
+    ResponseEntity<AdminResponseDto> modifierPartiellement(
+            @RequestParam String email,
+            @RequestParam String password,
+            @RequestBody AdminRequestDto adminRequestDto
+    ){
+        AdminResponseDto reponse = adminService.modifierPartiellement(email, password, adminRequestDto);
+        return ResponseEntity.ok(reponse);
+    }
+
 }

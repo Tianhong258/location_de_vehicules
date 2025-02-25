@@ -111,6 +111,8 @@ class AdminServiceImplTest {
         assertThrows(AdminException.class, ()->service.ajouter(dto));
     }
 
+    //TODO : vérification de password et email
+
     @DisplayName("""
             Si ajouter(AdminRequestDto ok), save() est appelé, et AdminResponseDto est renvoyé
             """)
@@ -141,7 +143,7 @@ class AdminServiceImplTest {
 
     @DisplayName("Test de la méthode trouver(ok) qui doit renvoyer un AdminResponseDto")
     @Test
-    void testVerifierEtTrouverExiste() {
+    void testTrouverOk() {
         Admin a = creerAdmin();
         Optional<Admin> optAdmin = Optional.of(a);
         Mockito.when(daoMock.findByEmailAndPassword("tanya@gmail.com", "333Tanya@")).thenReturn(optAdmin);
@@ -156,26 +158,26 @@ class AdminServiceImplTest {
             """)
     @Test
     void testTrouverTousSansAdminEnBase(){
-        List<AdminResponseDto> list = new ArrayList<AdminResponseDto>();
+        List<AdminResponseDto> list = new ArrayList<>();
         assertEquals(list, service.trouverTous());
     }
 
     @DisplayName("""
-            Test de la méthode trouverTous() renvoyer une liste<AdminResponseDto>
-            lors qu'il y a une liste d'admin en base
+            Test de la méthode trouverTous(ok) renvoyer une liste<AdminResponseDto>
+            lors qu'il y a une liste d'admins en base
             """)
     @Test
-    void testTrouverTous(){
-        List<Admin> listAdmin = new ArrayList<>();
-        listAdmin.add(creerAdmin());
-        listAdmin.add(creerAdmin2());
-        List<AdminResponseDto> listDto = new ArrayList<>();
-        listDto.add(creerAdminResponseDto());
-        listDto.add(creerAdminResponseDto2());
-        Mockito.when(daoMock.findAll()).thenReturn(listAdmin);
-        Mockito.when(mapperMock.toAdminResponseDto(listAdmin.getFirst())).thenReturn(listDto.getFirst());
-        Mockito.when(mapperMock.toAdminResponseDto(listAdmin.get(1))).thenReturn(listDto.get(1));
-        assertEquals(listDto, service.trouverTous());
+    void testTrouverTousOk(){
+        List<Admin> listeAdmin = new ArrayList<>();
+        listeAdmin.add(creerAdmin());
+        listeAdmin.add(creerAdmin2());
+        List<AdminResponseDto> listeDto = new ArrayList<>();
+        listeDto.add(creerAdminResponseDto());
+        listeDto.add(creerAdminResponseDto2());
+        Mockito.when(daoMock.findAll()).thenReturn(listeAdmin);
+        Mockito.when(mapperMock.toAdminResponseDto(listeAdmin.getFirst())).thenReturn(listeDto.getFirst());
+        Mockito.when(mapperMock.toAdminResponseDto(listeAdmin.get(1))).thenReturn(listeDto.get(1));
+        assertEquals(listeDto, service.trouverTous());
     }
 
     @DisplayName("""
@@ -194,7 +196,7 @@ class AdminServiceImplTest {
             Test la méthode supprimer(ok), delete() est appelé
             """)
     @Test
-    void testSupprimer(){
+    void testSupprimerOk(){
         Admin a = creerAdmin();
         Optional<Admin> optAdmin = Optional.of(a);
         Mockito.when(daoMock.findByEmailAndPassword("tanya@gmail.com", "333Tanya@")).thenReturn(optAdmin);
@@ -207,10 +209,10 @@ class AdminServiceImplTest {
             Test la méthode modifier(ok) qui renvoyer un objet adminResponseDto, save() est appelé
             """)
     @Test
-    void testModifier(){
+    void testModifierOk(){
         Admin a = creerAdmin();
         Optional<Admin> optAdmin = Optional.of(a);
-        AdminRequestDto adminRequestDto = new AdminRequestDto("Huang", "Tanya", "tanya@gmail.com","333Tanya@","Chien plus foufou à la maison");
+        AdminRequestDto adminRequestDto = new AdminRequestDto("Huang", "Tanya", "tanya@gmail.com","333Tanya@","Chien le plus cool à la maison");
         Admin adminModifie= new Admin();
         adminModifie.setId(1);
         adminModifie.setNom("Huang");
@@ -218,7 +220,7 @@ class AdminServiceImplTest {
         adminModifie.setPassword("333Tanya@");
         adminModifie.setEmail("tanya@gmail.com");
         adminModifie.setFonction("Chien le plus cool à la maison");
-        AdminResponseDto adminResponseDto = creerAdminResponseDto();
+        AdminResponseDto adminResponseDto = new AdminResponseDto(1,"Huang", "Tanya", "tanya@gmail.com","Chien le plus cool à la maison" );;
         Mockito.when(daoMock.findByEmailAndPassword("tanya@gmail.com", "333Tanya@")).thenReturn(optAdmin);
         Mockito.when(mapperMock.toAdmin(adminRequestDto)).thenReturn(adminModifie);
         Mockito.when(mapperMock.toAdminResponseDto(adminModifie)).thenReturn(adminResponseDto);
@@ -226,6 +228,44 @@ class AdminServiceImplTest {
         Mockito.verify(daoMock).save(adminModifie);
     }
 
+    @DisplayName("Test la méthode modifierPartiellement(avec nom blank) exception levée")
+    @Test
+    void testModifierPartiellementAvecNomBlank(){
+        Admin admin = new Admin();
+        admin.setId(1);
+        admin.setNom(" \n");
+        admin.setPrenom("Tanya");
+        admin.setPassword("333Tanya@");
+        admin.setEmail("tanya@gmail.com");
+        admin.setFonction("Chien le plus foufou à la maison");
+        AdminRequestDto adminRequestDto = new AdminRequestDto(" \n", "Tanya","tanya@gmail.com","333Tanya@","Chien le plus foufou à la maison");
+        Mockito.when(daoMock.findByEmailAndPassword("tanya@gmail.com","333Tanya@")).thenReturn(Optional.of(creerAdmin()));
+        Mockito.when(mapperMock.toAdmin(adminRequestDto)).thenReturn(admin);
+        assertThrows(AdminException.class, ()->service.modifierPartiellement("tanya@gmail.com","333Tanya@",adminRequestDto));
+    }
+
+    //TODO : les tests remplacer à finir
+    @DisplayName("""
+            Test la méthode modifierPartiellement(ok) qui renvoyer un objet adminResponseDto, save() est appelé
+            """)
+    @Test
+    void testModifierPartiellementOk(){
+        Admin a = creerAdmin();
+        Optional<Admin> optAdmin = Optional.of(a);
+        AdminRequestDto adminRequestDto = new AdminRequestDto(null, "Tanya", "tanya@gmail.com",null,"Chien le plus cool à la maison");
+        Admin nouveau = new Admin();
+        nouveau.setId(1);
+        nouveau.setPrenom("Tanya");
+        nouveau.setEmail("tanya@gmail.com");
+        nouveau.setFonction("Chien le plus cool à la maison");
+        AdminResponseDto adminResponseDto = new AdminResponseDto(1,"Huang", "Tanya", "tanya@gmail.com","Chien le plus cool à la maison" );
+        Mockito.when(daoMock.findByEmailAndPassword("tanya@gmail.com", "333Tanya@")).thenReturn(optAdmin);
+        Mockito.when(mapperMock.toAdmin(adminRequestDto)).thenReturn(nouveau);
+        Mockito.when(mapperMock.toAdminResponseDto(nouveau)).thenReturn(adminResponseDto);
+        Mockito.when(daoMock.save(optAdmin.get())).thenReturn(nouveau);
+        assertEquals(adminResponseDto,service.modifierPartiellement("tanya@gmail.com", "333Tanya@",adminRequestDto));
+        Mockito.verify(daoMock).save(optAdmin.get());
+    }
 
     private static Admin creerAdmin(){
         Admin admin = new Admin();

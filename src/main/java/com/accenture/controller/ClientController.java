@@ -4,7 +4,6 @@ import com.accenture.service.ClientService;
 import com.accenture.service.dto.ClientRequestDto;
 import com.accenture.service.dto.ClientResponseDto;
 import jakarta.validation.Valid;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -46,7 +45,7 @@ public class ClientController {
         return clientService.trouverTous();
     }
 
-    @PatchMapping
+    @PatchMapping("/desactiver")
     ResponseEntity<Void> desactiver(
             @RequestParam String email,
             @RequestParam String password
@@ -62,6 +61,16 @@ public class ClientController {
             @RequestBody @Valid ClientRequestDto clientRequestDto
     ){
         ClientResponseDto reponse = clientService.modifier(email, password, clientRequestDto);
+        return ResponseEntity.ok(reponse);
+    }
+
+    @PatchMapping
+    ResponseEntity<ClientResponseDto> modifierPartiellement(
+            @RequestParam String email,
+            @RequestParam String password,
+            @RequestBody ClientRequestDto clientRequestDto
+    ){
+        ClientResponseDto reponse =clientService.modifierPartiellement(email, password, clientRequestDto);
         return ResponseEntity.ok(reponse);
     }
 

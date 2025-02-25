@@ -14,6 +14,6 @@ public interface ClientService {
     List<ClientResponseDto> trouverTous();
     void desactiverOuSupprimer(String email, String password) throws ClientException, EntityNotFoundException;
     ClientResponseDto modifier(String email, String password, ClientRequestDto clientRequestDto) throws ClientException, EntityNotFoundException;
-
+    ClientResponseDto modifierPartiellement(String email, String password, ClientRequestDto clientRequestDto) throws ClientException, EntityNotFoundException;
 
 }
