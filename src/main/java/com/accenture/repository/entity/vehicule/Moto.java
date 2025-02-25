@@ -1,15 +1,13 @@
 package com.accenture.repository.entity.vehicule;
 
-import com.accenture.model.Permis;
-import com.accenture.model.TypeCarburant;
-import com.accenture.model.TypeMoto;
-import com.accenture.model.TypeVoiture;
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import com.accenture.model.*;
+import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -17,19 +15,36 @@ import lombok.ToString;
 @Table(name = "motos")
 @DiscriminatorValue("Moto")
 @ToString(callSuper = true)
+@EqualsAndHashCode(callSuper = true)
 public class Moto extends Vehicule {
-    private int nombreCylindres;
-    private int cylindree;
-    private int poids;
-    private double puissance;
-    private double hauteurSelle;
-    private String transmission;
-    private Enum<TypeMoto> type;
-    private Enum<Permis> permis;
-    private double tarifParJour;
-    private int kilometrage;
-    private boolean actif;
-    private boolean retire;
+    @Column(nullable=false)
+    private Integer nombreCylindres;
+    @Column(nullable=false)
+    private Integer cylindree;
+    @Column(nullable=false)
+    private Integer poids;
+    @Column(nullable=false)
+    private Double puissance;
+    @Column(nullable=false)
+    private Double hauteurSelle;
+
+    @Column(nullable=false)
+    @Enumerated(EnumType.STRING)
+    private Transmission transmission;
+    @Column(nullable=false)
+    @Enumerated(EnumType.STRING)
+    private TypeMoto type;
+    @Column(nullable=false)
+    @Enumerated(EnumType.STRING)
+    private List<Permis> permis;
+    @Column(nullable=false)
+    private Double tarifParJour;
+    @Column(nullable=false)
+    private Integer kilometrage;
+    @Column(nullable=false)
+    private Boolean actif;
+    @Column(nullable=false)
+    private Boolean retire;
 
 
 

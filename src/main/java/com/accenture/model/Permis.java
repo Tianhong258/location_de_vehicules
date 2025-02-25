@@ -9,5 +9,6 @@ public enum Permis {
     A,
     B,
     C,
-    E
+    E,
+    D1
 }

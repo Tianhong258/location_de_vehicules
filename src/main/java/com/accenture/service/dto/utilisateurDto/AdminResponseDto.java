@@ -1,4 +1,4 @@
-package com.accenture.service.dto;
+package com.accenture.service.dto.utilisateurDto;
 
 public record AdminResponseDto (
         long id,

@@ -1,7 +1,8 @@
 package com.accenture.service;
 
 import com.accenture.exception.AdminException;
-import com.accenture.service.dto.*;
+import com.accenture.service.dto.utilisateurDto.AdminRequestDto;
+import com.accenture.service.dto.utilisateurDto.AdminResponseDto;
 import jakarta.persistence.EntityNotFoundException;
 
 import java.util.List;

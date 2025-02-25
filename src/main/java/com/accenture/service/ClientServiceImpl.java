@@ -2,14 +2,12 @@ package com.accenture.service;
 
 
 import com.accenture.exception.ClientException;
-import com.accenture.exception.ClientException;
 import com.accenture.repository.ClientDao;
-import com.accenture.repository.entity.utilisateur.Admin;
 import com.accenture.repository.entity.utilisateur.Adresse;
 import com.accenture.repository.entity.utilisateur.Client;
-import com.accenture.service.dto.ClientRequestDto;
-import com.accenture.service.dto.ClientResponseDto;
-import com.accenture.service.mapper.ClientMapper;
+import com.accenture.service.dto.utilisateurDto.ClientRequestDto;
+import com.accenture.service.dto.utilisateurDto.ClientResponseDto;
+import com.accenture.service.mapper.utilisateurMapper.ClientMapper;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 import java.time.LocalDate;
@@ -44,7 +42,7 @@ public class ClientServiceImpl implements ClientService{
     public ClientResponseDto trouver(String email, String password) throws EntityNotFoundException {
         Client client = verifierEmailPassword(email,password);
         return clientMapper.toClientResponseDto(client);
-    }//TODO : refaire un peu test
+    }
 
 
 
