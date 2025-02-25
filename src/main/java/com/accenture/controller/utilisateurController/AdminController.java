@@ -1,11 +1,9 @@
-package com.accenture.controller;
+package com.accenture.controller.utilisateurController;
 
 
-import com.accenture.repository.entity.utilisateur.Admin;
 import com.accenture.service.AdminService;
-import com.accenture.service.dto.AdminRequestDto;
-import com.accenture.service.dto.AdminResponseDto;
-import com.accenture.service.mapper.AdminMapper;
+import com.accenture.service.dto.utilisateurDto.AdminRequestDto;
+import com.accenture.service.dto.utilisateurDto.AdminResponseDto;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,12 +17,8 @@ import java.util.List;
 @RequestMapping("/admins")
 public class AdminController {
     private final AdminService adminService;
-    private final AdminMapper adminMapper; //TODO : mapper est nécessaire ?
-
-
-    public AdminController(AdminService adminService, AdminMapper adminMapper) {
+    public AdminController(AdminService adminService) {
         this.adminService = adminService;
-        this.adminMapper = adminMapper;
     }
 
     @PostMapping

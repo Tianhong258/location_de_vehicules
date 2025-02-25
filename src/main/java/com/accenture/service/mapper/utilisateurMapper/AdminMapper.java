@@ -1,8 +1,8 @@
-package com.accenture.service.mapper;
+package com.accenture.service.mapper.utilisateurMapper;
 
 import com.accenture.repository.entity.utilisateur.Admin;
-import com.accenture.service.dto.AdminRequestDto;
-import com.accenture.service.dto.AdminResponseDto;
+import com.accenture.service.dto.utilisateurDto.AdminRequestDto;
+import com.accenture.service.dto.utilisateurDto.AdminResponseDto;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")

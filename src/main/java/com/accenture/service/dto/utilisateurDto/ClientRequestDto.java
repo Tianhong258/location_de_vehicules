@@ -1,4 +1,4 @@
-package com.accenture.service.dto;
+package com.accenture.service.dto.utilisateurDto;
 
 import com.accenture.model.Permis;
 import jakarta.validation.constraints.*;

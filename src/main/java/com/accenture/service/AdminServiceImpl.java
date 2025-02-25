@@ -3,9 +3,9 @@ package com.accenture.service;
 import com.accenture.exception.AdminException;
 import com.accenture.repository.AdminDao;
 import com.accenture.repository.entity.utilisateur.Admin;
-import com.accenture.service.dto.AdminRequestDto;
-import com.accenture.service.dto.AdminResponseDto;
-import com.accenture.service.mapper.AdminMapper;
+import com.accenture.service.dto.utilisateurDto.AdminRequestDto;
+import com.accenture.service.dto.utilisateurDto.AdminResponseDto;
+import com.accenture.service.mapper.utilisateurMapper.AdminMapper;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 

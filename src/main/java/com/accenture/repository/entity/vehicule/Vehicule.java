@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @DiscriminatorColumn(name = "DISCR")
 public class Vehicule {
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private long id;
     @Column(nullable=false)
     private String marque;

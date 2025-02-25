@@ -6,8 +6,10 @@ import com.accenture.model.Permis;
 import com.accenture.repository.ClientDao;
 import com.accenture.repository.entity.utilisateur.Adresse;
 import com.accenture.repository.entity.utilisateur.Client;
-import com.accenture.service.dto.*;
-import com.accenture.service.mapper.ClientMapper;
+import com.accenture.service.dto.utilisateurDto.AdresseDto;
+import com.accenture.service.dto.utilisateurDto.ClientRequestDto;
+import com.accenture.service.dto.utilisateurDto.ClientResponseDto;
+import com.accenture.service.mapper.utilisateurMapper.ClientMapper;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -187,7 +189,7 @@ class ClientServiceImplTest {
     @Test
     void testTrouverAvecEmailOuPasswordIncorrect() {
         Mockito.when(daoMock.findByEmailAndPassword("tanya@gmail.com","345Tanya@")).thenReturn(Optional.empty());
-        EntityNotFoundException ex = assertThrows(EntityNotFoundException.class, () -> service.trouver("tanya@gmail.com", "343Tanya@"));
+        EntityNotFoundException ex = assertThrows(EntityNotFoundException.class, () -> service.trouver("tanya@gmail.com", "345Tanya@"));
         assertEquals("Email n'existe pas ou password ne correspond pas", ex.getMessage());
     }
 
@@ -200,7 +202,7 @@ class ClientServiceImplTest {
         Mockito.when(daoMock.findByEmailAndPassword("tanya@gmail.com","345Tanya@")).thenReturn(optClient);
         ClientResponseDto clientResponseDto = clientResponseDto();
         Mockito.when(mapperMock.toClientResponseDto(c)).thenReturn(clientResponseDto);
-        assertSame(clientResponseDto, service.trouver("tanya@gmail.com", "333Tanya@"));
+        assertSame(clientResponseDto, service.trouver("tanya@gmail.com", "345Tanya@"));
     }
 
     @DisplayName("""
