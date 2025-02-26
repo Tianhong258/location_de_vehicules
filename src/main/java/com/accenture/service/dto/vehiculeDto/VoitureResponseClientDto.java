@@ -10,6 +10,7 @@ public record VoitureResponseClientDto(
         String marque,
         String modele,
         String couleur,
+        Integer nombrePlaces,
         TypeCarburant typeCarburant,
         Integer nombrePortes,
         Transmission transmission,

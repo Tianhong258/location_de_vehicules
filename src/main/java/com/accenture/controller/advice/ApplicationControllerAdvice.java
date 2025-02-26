@@ -2,6 +2,8 @@ package com.accenture.controller.advice;
 
 import com.accenture.exception.AdminException;
 import com.accenture.exception.ClientException;
+import com.accenture.exception.MotoException;
+import com.accenture.exception.VoitureException;
 import com.accenture.model.ErreurReponse;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -11,7 +13,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.sql.SQLIntegrityConstraintViolationException;
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
@@ -25,6 +26,17 @@ public class ApplicationControllerAdvice {
 
     @ExceptionHandler(AdminException.class)
     public ResponseEntity<ErreurReponse> gestionAdminException(AdminException ex){
+        ErreurReponse er = new ErreurReponse(LocalDateTime.now(), "Erreur fonctionnelle", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(er);
+    }
+
+    @ExceptionHandler(VoitureException.class)
+    public ResponseEntity<ErreurReponse> gestionVoitureException(VoitureException ex){
+        ErreurReponse er = new ErreurReponse(LocalDateTime.now(), "Erreur fonctionnelle", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(er);
+    }
+    @ExceptionHandler(MotoException.class)
+    public ResponseEntity<ErreurReponse> gestionMotoException(MotoException ex){
         ErreurReponse er = new ErreurReponse(LocalDateTime.now(), "Erreur fonctionnelle", ex.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(er);
     }
@@ -57,4 +69,8 @@ public class ApplicationControllerAdvice {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
     }
 
+//TODO : est-ce qu'il faut mettre toutes les erreurs possible dans cette classe ?
+//HttpMessageNotReadableException : quand l'utilisateur entre des champs qui n'existent pas dans le body
+
 }
+

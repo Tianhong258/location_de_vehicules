@@ -27,7 +27,6 @@ public class Moto extends Vehicule {
     private Double puissance;
     @Column(nullable=false)
     private Double hauteurSelle;
-
     @Column(nullable=false)
     @Enumerated(EnumType.STRING)
     private Transmission transmission;

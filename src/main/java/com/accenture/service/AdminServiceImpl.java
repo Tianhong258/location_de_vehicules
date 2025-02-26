@@ -36,7 +36,7 @@ public class AdminServiceImpl implements AdminService{
 
     @Override
     public AdminResponseDto ajouter(AdminRequestDto adminRequestDto) throws AdminException {
-        verifierAdmin(adminRequestDto);
+        verifierAdminRequestDto(adminRequestDto);
         Admin admin= adminMapper.toAdmin(adminRequestDto);
         Admin adminEnreg = adminDao.save(admin);
         return adminMapper.toAdminResponseDto(adminEnreg);
@@ -68,7 +68,7 @@ public class AdminServiceImpl implements AdminService{
     @Override
     public AdminResponseDto modifier(String email, String password, AdminRequestDto adminRequestDto ) throws EntityNotFoundException, AdminException {
         Admin adminAModifier = verifierEmailPassword(email, password);
-        verifierAdmin(adminRequestDto);
+        verifierAdminRequestDto(adminRequestDto);
         Admin nouveau = adminMapper.toAdmin(adminRequestDto);
         nouveau.setId(adminAModifier.getId());
         adminDao.save(nouveau);
@@ -79,7 +79,7 @@ public class AdminServiceImpl implements AdminService{
     public AdminResponseDto modifierPartiellement(String email, String password, AdminRequestDto adminRequestDto) throws AdminException, EntityNotFoundException {
         Admin adminAModifier = verifierEmailPassword(email, password);
         Admin nouveau = adminMapper.toAdmin(adminRequestDto);
-        remplacer(nouveau, adminAModifier);
+        verifierEtRemplacer(nouveau, adminAModifier);
         Admin adminEnreg = adminDao.save(adminAModifier);
         return adminMapper.toAdminResponseDto(adminEnreg);
     }
@@ -92,58 +92,58 @@ public class AdminServiceImpl implements AdminService{
         return optAdmin.get();
     }
 
-    private static void remplacer(Admin admin, Admin adminAModifier) throws AdminException{
+    private static void verifierEtRemplacer(Admin admin, Admin adminAModifier) throws AdminException{
         if (admin == null)
-            throw new AdminException("l'admin est nulle");
+            throw new AdminException("l'admin est null");
         String adminNom = admin.getNom();
         String adminPrenom = admin.getPrenom();
         String adminEmail = admin.getEmail();
         String adminPassword = admin.getPassword();
         String adminFonction = admin.getFonction();
-        if (adminNom != null && adminNom.trim().isBlank())
+        if (adminNom != null && adminNom.isBlank())
             throw new AdminException("le nom de l'administrateur est absent");
         if(adminNom != null)
             adminAModifier.setNom(adminNom);
-        if (adminPrenom != null && adminPrenom.trim().isBlank())
+        if (adminPrenom != null && adminPrenom.isBlank())
             throw new AdminException("le prénom de l'administrateur est absent");
         if(adminPrenom != null)
             adminAModifier.setPrenom(adminPrenom);
-        if (adminEmail != null && adminEmail.trim().isBlank())
+        if (adminEmail != null && adminEmail.isBlank())
             throw new AdminException("le mail de l'administrateur est absent");
         if (adminEmail != null && !adminEmail.contains("@"))
-            throw new AdminException("le format de l'email de l'administrateur est invalid");
+            throw new AdminException("le format de l'email de l'administrateur est invalide");
         if(adminEmail != null)
             adminAModifier.setEmail(adminEmail);
-        if (adminPassword != null && adminPassword.trim().isBlank())
+        if (adminPassword != null && adminPassword.isBlank())
             throw new AdminException("le password de l'administrateur est absent");
         if(adminPassword != null && !passwordPattern.matcher(adminPassword).matches())
-            throw new AdminException("le format du password de l'administrateur est invalid");
+            throw new AdminException("le format du password de l'administrateur est invalide");
         if(adminPassword != null)
                adminAModifier.setPassword(adminPassword);
-        if (adminFonction != null && adminFonction.trim().isBlank())
+        if (adminFonction != null && adminFonction.isBlank())
             throw new AdminException("la fonction de l'administrateur est absente");
         if(adminFonction != null)
             adminAModifier.setFonction(adminFonction);
     }
 
 
-    private static void verifierAdmin(AdminRequestDto dto) throws AdminException {
+    private static void verifierAdminRequestDto(AdminRequestDto dto) throws AdminException {
         //TODO: dateNaissance est bon ou pas
         if (dto == null)
-            throw new AdminException("l'adminRequestDto est nulle");
-        if (dto.nom() == null || dto.nom().trim().isBlank())
+            throw new AdminException("l'adminRequestDto est null");
+        if (dto.nom() == null || dto.nom().isBlank())
             throw new AdminException("le nom de l'administrateur est absent");
-        if (dto.prenom() == null || dto.prenom().trim().isBlank())
+        if (dto.prenom() == null || dto.prenom().isBlank())
             throw new AdminException("le prénom de l'administrateur est absent");
-        if (dto.email() == null || dto.email().trim().isBlank())
+        if (dto.email() == null || dto.email().isBlank())
             throw new AdminException("le mail de l'administrateur est absent");
         if( ! dto.email().contains("@"))
-            throw new AdminException("le format de l'email de l'administrateur est invalid");
-        if (dto.password() == null || dto.password().trim().isBlank())
+            throw new AdminException("le format de l'email de l'administrateur est invalide");
+        if (dto.password() == null || dto.password().isBlank())
             throw new AdminException("le password de l'administrateur est absent");
         if(!passwordPattern.matcher(dto.password()).matches())
-            throw new AdminException("le format du password de l'administrateur est invalid");
-        if (dto.fonction() == null || dto.fonction().trim().isBlank())
+            throw new AdminException("le format du password de l'administrateur est invalide");
+        if (dto.fonction() == null || dto.fonction().isBlank())
             throw new AdminException("la fonction de l'administrateur est absente");
     }
 

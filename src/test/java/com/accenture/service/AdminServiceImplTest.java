@@ -212,19 +212,19 @@ class AdminServiceImplTest {
         Admin a = creerAdmin();
         Optional<Admin> optAdmin = Optional.of(a);
         AdminRequestDto adminRequestDto = new AdminRequestDto("Huang", "Tanya", "tanya@gmail.com","333Tanya@","Chien le plus cool à la maison");
-        Admin adminModifie= new Admin();
-        adminModifie.setId(1);
-        adminModifie.setNom("Huang");
-        adminModifie.setPrenom("Tanya");
-        adminModifie.setPassword("333Tanya@");
-        adminModifie.setEmail("tanya@gmail.com");
-        adminModifie.setFonction("Chien le plus cool à la maison");
+        Admin nouveau= new Admin();
+        nouveau.setId(1);
+        nouveau.setNom("Huang");
+        nouveau.setPrenom("Tanya");
+        nouveau.setPassword("333Tanya@");
+        nouveau.setEmail("tanya@gmail.com");
+        nouveau.setFonction("Chien le plus cool à la maison");
         AdminResponseDto adminResponseDto = new AdminResponseDto(1,"Huang", "Tanya", "tanya@gmail.com","Chien le plus cool à la maison" );;
         Mockito.when(daoMock.findByEmailAndPassword("tanya@gmail.com", "333Tanya@")).thenReturn(optAdmin);
-        Mockito.when(mapperMock.toAdmin(adminRequestDto)).thenReturn(adminModifie);
-        Mockito.when(mapperMock.toAdminResponseDto(adminModifie)).thenReturn(adminResponseDto);
+        Mockito.when(mapperMock.toAdmin(adminRequestDto)).thenReturn(nouveau);
+        Mockito.when(mapperMock.toAdminResponseDto(nouveau)).thenReturn(adminResponseDto);
         assertEquals(adminResponseDto,service.modifier("tanya@gmail.com", "333Tanya@",adminRequestDto));
-        Mockito.verify(daoMock).save(adminModifie);
+        Mockito.verify(daoMock).save(nouveau);
     }
 
     @DisplayName("Test la méthode modifierPartiellement(avec nom blank) exception levée")

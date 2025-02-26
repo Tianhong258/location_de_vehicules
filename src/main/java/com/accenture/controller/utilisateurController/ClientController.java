@@ -45,8 +45,8 @@ public class ClientController {
         return clientService.trouverTous();
     }
 
-    @PatchMapping("/desactiver")
-    ResponseEntity<Void> desactiver(
+    @DeleteMapping
+    ResponseEntity<Void> desactiverOuSupprimer(
             @RequestParam String email,
             @RequestParam String password
     ){

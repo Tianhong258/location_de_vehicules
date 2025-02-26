@@ -5,5 +5,4 @@ public enum TypeCarburant {
     ESSENCE,
     ELECTRIQUE,
     HYBRIDE
-
 }

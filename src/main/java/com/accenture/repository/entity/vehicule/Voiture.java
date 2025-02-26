@@ -1,8 +1,5 @@
 package com.accenture.repository.entity.vehicule;
-import com.accenture.model.Permis;
-import com.accenture.model.Transmission;
-import com.accenture.model.TypeCarburant;
-import com.accenture.model.TypeVoiture;
+import com.accenture.model.*;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -22,8 +19,9 @@ public class Voiture extends Vehicule {
     @Enumerated(EnumType.STRING)
     @Column(nullable=false)
     private TypeCarburant typeCarburant;
+    @Enumerated(EnumType.STRING)
     @Column(nullable=false)
-    private Integer nombrePortes;
+    private NombrePortesVoiture nombrePortes;
     @Enumerated(EnumType.STRING)
     @Column(nullable=false)
     private Transmission transmission;
@@ -42,7 +40,7 @@ public class Voiture extends Vehicule {
     @Column(nullable=false)
     private Integer kilometrage;
     @Column(nullable=false)
-    private Boolean actif = true;
+    private Boolean actif;
     @Column(nullable=false)
-    private Boolean retire = false;
+    private Boolean retire;
 }

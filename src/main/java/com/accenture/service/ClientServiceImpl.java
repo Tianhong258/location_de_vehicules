@@ -32,7 +32,7 @@ public class ClientServiceImpl implements ClientService{
 
     @Override
     public ClientResponseDto ajouter(ClientRequestDto clientRequestDto) throws ClientException {
-        verifierClient(clientRequestDto);
+        verifierClientRequestDto(clientRequestDto);
         Client client = clientMapper.toClient(clientRequestDto);
         Client clientEnreg = clientDao.save(client);
         return clientMapper.toClientResponseDto(clientEnreg);
@@ -57,10 +57,11 @@ public class ClientServiceImpl implements ClientService{
     @Override
     public void desactiverOuSupprimer(String email, String password) throws ClientException,EntityNotFoundException {
         Client client = verifierEmailPassword(email, password);
+        clientDao.delete(client);
         //trouver les locations, s'il y a pas
         // l'utilisateur peut supprimer son compte : créer supprimer() et desactiver()
-        client.setDesactive(true);
-        clientDao.save(client);
+//        client.setDesactive(true);
+//        clientDao.save(client);
         //clientDao.deleteByEmail(clientResponseDto.email());
     }
 
@@ -71,14 +72,14 @@ public class ClientServiceImpl implements ClientService{
         clientModifie.setId(client.getId());
         clientDao.save(clientModifie);
         return clientMapper.toClientResponseDto(clientModifie);
-        //TODO : Il n'est pas content, je dois faire void pour vérifier la connection ?
     }
 
     @Override
     public ClientResponseDto modifierPartiellement(String email, String password, ClientRequestDto clientRequestDto) throws ClientException, EntityNotFoundException {
         Client clientAModifier = verifierEmailPassword(email, password);
+        verifierClientRequestDto(clientRequestDto);
         Client nouveau = clientMapper.toClient(clientRequestDto);
-        remplacer(nouveau, clientAModifier);
+        verifierEtRemplacer(nouveau, clientAModifier);
         Client clientEnreg = clientDao.save(clientAModifier);
         return clientMapper.toClientResponseDto(clientEnreg);
     }
@@ -91,7 +92,7 @@ public class ClientServiceImpl implements ClientService{
         return optClient.get();
     }
 
-    private static void remplacer(Client client, Client clientAModifier) throws ClientException{
+    private static void verifierEtRemplacer(Client client, Client clientAModifier) throws ClientException{
         if (client == null)
             throw new ClientException("l'client est nulle");
         String clientNom = client.getNom();
@@ -100,35 +101,35 @@ public class ClientServiceImpl implements ClientService{
         String clientPassword = client.getPassword();
         Adresse clientAdresse = client.getAdresse();
         LocalDate clientDateNaissance = client.getDateNaissance();
-        if (clientNom != null && clientNom.trim().isBlank())
+        if (clientNom != null && clientNom.isBlank())
             throw new ClientException("le nom du client est absent");
         if(clientNom != null)
             clientAModifier.setNom(clientNom);
-        if (clientPrenom != null && clientPrenom.trim().isBlank())
+        if (clientPrenom != null && clientPrenom.isBlank())
             throw new ClientException("le prénom du client est absent");
         if(clientPrenom != null)
             clientAModifier.setPrenom(clientPrenom);
-        if (clientEmail != null && clientEmail.trim().isBlank())
+        if (clientEmail != null && clientEmail.isBlank())
             throw new ClientException("le mail du client est absent");
         if (clientEmail != null && !clientEmail.contains("@"))
             throw new ClientException("le format de l'email du client est invalid");
         if(clientEmail != null)
             clientAModifier.setEmail(clientEmail);
-        if (clientPassword != null && clientPassword.trim().isBlank())
+        if (clientPassword != null && clientPassword.isBlank())
             throw new ClientException("le password du client est absent");
         if(clientPassword != null && !passwordPattern.matcher(clientPassword).matches())
             throw new ClientException("le format du password du client est invalid");
         if(clientPassword != null)
             clientAModifier.setPassword(clientPassword);
-        if (clientAdresse.getRue() != null && clientAdresse.getRue().trim().isBlank())
+        if (clientAdresse.getRue() != null && clientAdresse.getRue().isBlank())
             throw new ClientException("la rue du client est absent");
         if(clientAdresse.getRue() != null)
             clientAModifier.getAdresse().setRue(clientAdresse.getRue());
-        if (clientAdresse.getCodePostal() != null && clientAdresse.getCodePostal().trim().isBlank())
+        if (clientAdresse.getCodePostal() != null && clientAdresse.getCodePostal().isBlank())
             throw new ClientException("le code postal du client est absent");
         if(clientAdresse.getCodePostal() != null)
             clientAModifier.getAdresse().setCodePostal(clientAdresse.getCodePostal());
-        if (clientAdresse.getVille() != null && clientAdresse.getVille().trim().isBlank())
+        if (clientAdresse.getVille() != null && clientAdresse.getVille().isBlank())
             throw new ClientException("la ville du client est absent");
         if(clientAdresse.getVille() != null)
             clientAModifier.getAdresse().setVille(clientAdresse.getVille());
@@ -142,29 +143,29 @@ public class ClientServiceImpl implements ClientService{
 
     }
 
-    private static void verifierClient(ClientRequestDto dto) throws ClientException{
+    private static void verifierClientRequestDto(ClientRequestDto dto) throws ClientException{
         //TODO: controller de permis ?????
         if (dto == null)
             throw new ClientException("le clientRequestDto est nulle");
-        if (dto.nom() == null || dto.nom().trim().isBlank())
+        if (dto.nom() == null || dto.nom().isBlank())
             throw new ClientException("le nom du client est absent");
-        if (dto.prenom() == null || dto.prenom().trim().isBlank())
+        if (dto.prenom() == null || dto.prenom().isBlank())
             throw new ClientException("le prénom du client est absent");
-        if (dto.email() == null || dto.email().trim().isBlank())
+        if (dto.email() == null || dto.email().isBlank())
             throw new ClientException("le mail du client est absent");
         if( ! dto.email().contains("@"))
             throw new ClientException("le format de l'email du client est invalid");
-        if (dto.password() == null || dto.password().trim().isBlank())
+        if (dto.password() == null || dto.password().isBlank())
             throw new ClientException("le password du client est absent");
         if(!passwordPattern.matcher(dto.password()).matches())
             throw new ClientException("le format du password du client est invalid");
         if(dto.adresse() == null)
             throw new ClientException("l'adresse du client est absent");
-        if(dto.adresse().rue()== null || dto.adresse().rue().trim().isBlank())
+        if(dto.adresse().rue()== null || dto.adresse().rue().isBlank())
             throw new ClientException("la rue du client est absent");
-        if(dto.adresse().codePostal() == null || dto.adresse().codePostal().trim().isBlank())
+        if(dto.adresse().codePostal() == null || dto.adresse().codePostal().isBlank())
             throw new ClientException("le code postal du client est absent");
-        if(dto.adresse().ville() == null || dto.adresse().ville().trim().isBlank())
+        if(dto.adresse().ville() == null || dto.adresse().ville().isBlank())
             throw new ClientException("la ville du client est absent");
         if (dto.dateNaissance() == null)
             throw new ClientException("la date de naissance du client est absent");
