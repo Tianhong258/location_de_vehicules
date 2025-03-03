@@ -16,7 +16,6 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Table(name = "clients")
-@DiscriminatorValue("C")
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 public class Client extends UtilisateurConnecte{
@@ -24,15 +23,11 @@ public class Client extends UtilisateurConnecte{
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(nullable=false)
     private Adresse adresse;
-    @Column(nullable=false)
     private LocalDate dateNaissance;
-    @Column(nullable=false)
     private LocalDate dateInscription = LocalDate.now();
     @Enumerated(EnumType.STRING)
     private List<Permis> listePermis;
-    @Column(nullable=false)
     private Boolean desactive = false;
-    @Column(nullable = false)
     private String role = "ROLE_CLIENT";
 
 

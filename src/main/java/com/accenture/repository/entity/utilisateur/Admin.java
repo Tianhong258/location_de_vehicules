@@ -15,13 +15,10 @@ import lombok.ToString;
 @NoArgsConstructor
 @Entity
 @Table(name = "administrateurs")
-@DiscriminatorValue("A")
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
 public class Admin extends UtilisateurConnecte{
-    @Column(nullable=false)
     private String fonction;
-    @Column(nullable=false)
     private String role = "ROLE_ADMIN";
 
 }

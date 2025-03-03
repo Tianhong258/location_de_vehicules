@@ -1,11 +1,9 @@
 package com.accenture.controller.advice;
 
-import com.accenture.exception.AdminException;
-import com.accenture.exception.ClientException;
-import com.accenture.exception.MotoException;
-import com.accenture.exception.VoitureException;
+import com.accenture.exception.*;
 import com.accenture.model.ErreurReponse;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,45 +16,66 @@ import java.util.stream.Collectors;
 
 @RestControllerAdvice
 public class ApplicationControllerAdvice {
-    @ExceptionHandler(ClientException.class)
-    public ResponseEntity<ErreurReponse> gestionClientException(ClientException ex){
+    /**
+     * <p>La méthode <code>gestionUtilisateurException</code>gère toutes les exceptions de type `UtilisateurException`.</p>
+     *
+     * @param ex L'exception de type `UtilisateurException` capturée.
+     * @return Une réponse HTTP contenant un statut HTTP BAD_REQUEST(400) et les détails de l'erreur.
+     */
+    @ExceptionHandler(UtilisateurException.class)
+    public ResponseEntity<ErreurReponse> gestionUtilisateurException(UtilisateurException ex){
         ErreurReponse er = new ErreurReponse(LocalDateTime.now(), "Erreur fonctionnelle", ex.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(er);
     }
 
-    @ExceptionHandler(AdminException.class)
-    public ResponseEntity<ErreurReponse> gestionAdminException(AdminException ex){
+
+    /**
+     * <p>La méthode <code>gestionVehiculeException</code> gère toutes les exceptions de type `VehiculeException`.</p>
+     *
+     * @param ex L'exception de type `VehiculeException` capturée.
+     * @return Une réponse HTTP contenant un statut HTTP BAD_REQUEST(400) et les détails de l'erreur.
+     */
+
+    @ExceptionHandler(VehiculeException.class)
+    public ResponseEntity<ErreurReponse> gestionVehiculeException(VehiculeException ex){
         ErreurReponse er = new ErreurReponse(LocalDateTime.now(), "Erreur fonctionnelle", ex.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(er);
     }
 
-    @ExceptionHandler(VoitureException.class)
-    public ResponseEntity<ErreurReponse> gestionVoitureException(VoitureException ex){
-        ErreurReponse er = new ErreurReponse(LocalDateTime.now(), "Erreur fonctionnelle", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(er);
-    }
-    @ExceptionHandler(MotoException.class)
-    public ResponseEntity<ErreurReponse> gestionMotoException(MotoException ex){
-        ErreurReponse er = new ErreurReponse(LocalDateTime.now(), "Erreur fonctionnelle", ex.getMessage());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(er);
-    }
-
+    /**
+     * <p>La méthode <code>entityNotFoundException</code> gère les exceptions de type `EntityNotFoundException`.</p>
+     *
+     * @param ex L'exception de type `EntityNotFoundException` capturée.
+     * @return  Une réponse HTTP contenant un statut HTTP NOT_FOUND(404) et les détails de l'erreur.
+     */
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ErreurReponse> entityNotFoundException(EntityNotFoundException ex){
         ErreurReponse er = new ErreurReponse(LocalDateTime.now(), "Mauvaise Requete", ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(er);
     }
 
+    /**
+     * <p>La méthode <code>problemeValidation</code> gère les exceptions de type `MethodArgumentNotValidException`.</p>
+     *
+     * @param ex L'exception de type `MethodArgumentNotValidException` capturée.
+     * @return Une réponse HTTP contenant un statut HTTP BAD_REQUEST (400) et les détails de l'erreur de validation.
+     */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErreurReponse> problemeValidation(MethodArgumentNotValidException ex){
         String message = ex.getBindingResult().getAllErrors()
                 .stream()
-                .map(objectError -> objectError.getDefaultMessage())
+                .map(DefaultMessageSourceResolvable::getDefaultMessage)
                 .collect(Collectors.joining(", "));
         ErreurReponse er = new ErreurReponse(LocalDateTime.now(), "Validation erreur", message);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(er);
     }
 
+    /**
+     * <p>La méthode <code>problemeDuplication</code> gère les exceptions de type `DataIntegrityViolationException`.</p>
+     *
+     * @param ex L'exception de type `DataIntegrityViolationException` capturée.
+     * @return Une réponse HTTP contenant un statut HTTP INTERNAL_SERVER_ERROR (500) et les détails de l'erreur.
+     */
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErreurReponse> problemeDuplication(DataIntegrityViolationException ex){
         String message = ex.getMessage();

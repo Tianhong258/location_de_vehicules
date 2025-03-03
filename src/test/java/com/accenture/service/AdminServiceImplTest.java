@@ -1,11 +1,11 @@
 package com.accenture.service;
 
-import com.accenture.exception.AdminException;
+import com.accenture.exception.UtilisateurException;
 import com.accenture.repository.AdminDao;
 import com.accenture.repository.entity.utilisateur.Admin;
-import com.accenture.service.dto.utilisateurDto.AdminRequestDto;
-import com.accenture.service.dto.utilisateurDto.AdminResponseDto;
-import com.accenture.service.mapper.utilisateurMapper.AdminMapper;
+import com.accenture.service.dto.utilisateur.AdminRequestDto;
+import com.accenture.service.dto.utilisateur.AdminResponseDto;
+import com.accenture.service.mapper.utilisateur.AdminMapper;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,35 +36,35 @@ class AdminServiceImplTest {
     @DisplayName("Test de la méthode ajouter(dto null) exception levée")
     @Test
     void testAjouterNull(){
-        assertThrows(AdminException.class, ()->service.ajouter(null));
+        assertThrows(UtilisateurException.class, ()->service.ajouter(null));
     }
 
     @DisplayName("Test de la méthode ajouter(avec nom null) exception levée")
     @Test
     void testAjouterAvecNomNull(){
         AdminRequestDto dto = new AdminRequestDto(null, "Tanya", "tanya@gmail.com","333Tanya@","Chien plus foufou à la maison");
-        assertThrows(AdminException.class, ()->service.ajouter(dto));
+        assertThrows(UtilisateurException.class, ()->service.ajouter(dto));
     }
 
     @DisplayName("Test de la méthode ajouter(avec nom blank) exception levée")
     @Test
     void testAjouterAvecNomBlank(){
         AdminRequestDto dto = new AdminRequestDto("  \n   ", "Tanya", "tanya@gmail.com","333Tanya@","Chien plus foufou à la maison");
-        assertThrows(AdminException.class, ()->service.ajouter(dto));
+        assertThrows(UtilisateurException.class, ()->service.ajouter(dto));
     }
 
     @DisplayName("Test de la méthode ajouter(avec prenom null) exception levée")
     @Test
     void testAjouterAvecPrenomNull(){
         AdminRequestDto dto = new AdminRequestDto("Huang", null, "tanya@gmail.com","333Tanya@","Chien plus foufou à la maison");
-        assertThrows(AdminException.class, ()->service.ajouter(dto));
+        assertThrows(UtilisateurException.class, ()->service.ajouter(dto));
     }
 
     @DisplayName("Test de la méthode ajouter(avec prenom blank) exception levée")
     @Test
     void testAjouterAvecPrenomBlank(){
         AdminRequestDto dto = new AdminRequestDto("Huang", " \n     ", "tanya@gmail.com","333Tanya@","Chien plus foufou à la maison");
-        assertThrows(AdminException.class, ()->service.ajouter(dto));
+        assertThrows(UtilisateurException.class, ()->service.ajouter(dto));
     }
 
 
@@ -72,42 +72,42 @@ class AdminServiceImplTest {
     @Test
     void testAjouterAvecMailNull(){
         AdminRequestDto dto = new AdminRequestDto("Huang", "Tanya",null,"333Tanya@","Chien plus foufou à la maison");
-        assertThrows(AdminException.class, ()->service.ajouter(dto));
+        assertThrows(UtilisateurException.class, ()->service.ajouter(dto));
     }
 
     @DisplayName("Test de la méthode ajouter(avec mail blank) exception levée")
     @Test
     void testAjouterAvecMailBlank(){
         AdminRequestDto dto = new AdminRequestDto("Huang", "Tanya", "   \n   ","333Tanya@","Chien plus foufou à la maison");
-        assertThrows(AdminException.class, ()->service.ajouter(dto));
+        assertThrows(UtilisateurException.class, ()->service.ajouter(dto));
     }
 
     @DisplayName("Test de la méthode ajouter(avec password null) exception levée")
     @Test
     void testAjouterAvecPasswordNull(){
         AdminRequestDto dto = new AdminRequestDto("Huang", "Tanya", "tanya@gmail.com",null,"Chien plus foufou à la maison");
-        assertThrows(AdminException.class, ()->service.ajouter(dto));
+        assertThrows(UtilisateurException.class, ()->service.ajouter(dto));
     }
 
     @DisplayName("Test de la méthode ajouter(avec password blank) exception levée")
     @Test
     void testAjouterAvecPasswordBlank(){
         AdminRequestDto dto = new AdminRequestDto("Huang", "Tanya", "tanya@gmail.com","  ","Chien plus foufou à la maison");
-        assertThrows(AdminException.class, ()->service.ajouter(dto));
+        assertThrows(UtilisateurException.class, ()->service.ajouter(dto));
     }
 
     @DisplayName("Test de la méthode ajouter(avec fonction null) exception levée")
     @Test
     void testAjouterAvecFonctionNull(){
         AdminRequestDto dto = new AdminRequestDto("Huang", "Tanya", "tanya@gmail.com","333Tanya@",null);
-        assertThrows(AdminException.class, ()->service.ajouter(dto));
+        assertThrows(UtilisateurException.class, ()->service.ajouter(dto));
     }
 
     @DisplayName("Test de la méthode ajouter(avec fonction blank) exception levée")
     @Test
     void testAjouterAvecFonctionBlank(){
         AdminRequestDto dto = new AdminRequestDto("Huang", "Tanya", "tanya@gmail.com","333Tanya@","     ");
-        assertThrows(AdminException.class, ()->service.ajouter(dto));
+        assertThrows(UtilisateurException.class, ()->service.ajouter(dto));
     }
 
     //TODO : vérification de password et email
@@ -187,7 +187,7 @@ class AdminServiceImplTest {
         Admin a = creerAdmin();
         Optional<Admin> optAdmin = Optional.of(a);
         Mockito.when(daoMock.findByEmailAndPassword("tanya@gmail.com", "333Tanya@")).thenReturn(optAdmin);
-        AdminException ex = assertThrows(AdminException.class, ()->service.supprimer("tanya@gmail.com", "333Tanya@"));
+        UtilisateurException ex = assertThrows(UtilisateurException.class, ()->service.supprimer("tanya@gmail.com", "333Tanya@"));
         assertEquals("Interdit de supprimer le compte du dernier administrateur ! ", ex.getMessage());
     }
 
@@ -240,10 +240,12 @@ class AdminServiceImplTest {
         AdminRequestDto adminRequestDto = new AdminRequestDto(" \n", "Tanya","tanya@gmail.com","333Tanya@","Chien le plus foufou à la maison");
         Mockito.when(daoMock.findByEmailAndPassword("tanya@gmail.com","333Tanya@")).thenReturn(Optional.of(creerAdmin()));
         Mockito.when(mapperMock.toAdmin(adminRequestDto)).thenReturn(admin);
-        assertThrows(AdminException.class, ()->service.modifierPartiellement("tanya@gmail.com","333Tanya@",adminRequestDto));
+        assertThrows(UtilisateurException.class, ()->service.modifierPartiellement("tanya@gmail.com","333Tanya@",adminRequestDto));
     }
 
     //TODO : les tests remplacer à finir
+
+
     @DisplayName("""
             Test la méthode modifierPartiellement(ok) qui renvoyer un objet adminResponseDto, save() est appelé
             """)

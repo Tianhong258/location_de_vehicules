@@ -1,13 +1,13 @@
 package com.accenture.service;
 
-import com.accenture.exception.MotoException;
+import com.accenture.exception.VehiculeException;
 import com.accenture.model.Filtre;
 import com.accenture.model.Permis;
 import com.accenture.repository.MotoDao;
 import com.accenture.repository.entity.vehicule.Moto;
-import com.accenture.service.dto.vehiculeDto.MotoRequestDto;
-import com.accenture.service.dto.vehiculeDto.MotoResponseAdminDto;
-import com.accenture.service.mapper.vehiculeMapper.MotoMapper;
+import com.accenture.service.dto.vehicule.MotoRequestDto;
+import com.accenture.service.dto.vehicule.MotoResponseAdminDto;
+import com.accenture.service.mapper.vehicule.MotoMapper;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.stereotype.Service;
 
@@ -25,22 +25,32 @@ public class MotoServiceImpl implements MotoService {
         this.motoMapper = motoMapper;
     }
 
+    /**
+     * <p>La méthode <code>ajouter</code> permet d'ajouter une nouvelle moto en validant ses informations.</p>
+     *
+     * @param motoRequestDto Les informations de la moto à ajouter.
+     * @return Une réponse contenant les informations de la moto ajoutée.
+     * @throws VehiculeException Si les informations de la moto sont invalides.
+     */
     @Override
-    public MotoResponseAdminDto ajouter(MotoRequestDto motoRequestDto) throws MotoException {
+    public MotoResponseAdminDto ajouter(MotoRequestDto motoRequestDto) throws VehiculeException {
         verifierMoto(motoRequestDto);
         Moto moto = motoMapper.toMoto(motoRequestDto);
-        if (moto.getCylindree() <= 125 && moto.getPuissance()<= 11)
-            moto.setPermis(List.of(Permis.A1,Permis.A2,Permis.A));
-        if(moto.getPuissance()<=35)
-            moto.setPermis(List.of(Permis.A2,Permis.A));
-        else
-            moto.setPermis(List.of(Permis.A));
+        genererPermisMoto(moto);
         Moto motoEnreg = motoDao.save(moto);
         return motoMapper.toMotoResponseAdminDto(motoEnreg);
 
         //TODO : les conditions à vérifier
     }
 
+
+
+
+    /**
+     * <p>La méthode <code>trouverToutes</code> permet de récupérer toutes les motos, triées selon leur statut actif et retiré.</p>
+     *
+     * @return Une liste de réponses contenant les informations de toutes les motos.
+     */
     @Override
     public List<MotoResponseAdminDto> trouverToutes() {
         return motoDao.findByOrderByActifDescRetireDesc()
@@ -49,6 +59,12 @@ public class MotoServiceImpl implements MotoService {
                 .toList();
     }
 
+    /**
+     * <p>La méthode <code>filtrer</code> permet de filtrer les motos selon leur statut actif ou retiré.</p>
+     *
+     * @param filtre Le filtre à appliquer pour récupérer les motos (actif, non actif, retiré, non retiré).
+     * @return Une liste de réponses contenant les informations des motos correspondant au filtre.
+     */
     @Override
     public List<MotoResponseAdminDto> filtrer(Filtre filtre) {
         List<Moto> liste = switch (filtre) {
@@ -61,7 +77,13 @@ public class MotoServiceImpl implements MotoService {
                 .map(motoMapper::toMotoResponseAdminDto)
                 .toList();
     }
-
+    /**
+     * <p>La méthode <code>trouver</code> permet de récupérer une moto en fonction de son id.</p>
+     *
+     * @param id L'id de la moto à récupérer.
+     * @return Une réponse contenant les informations de la moto trouvée.
+     * @throws EntityNotFoundException Si la moto avec l'id spécifié n'est pas trouvée.
+     */
     @Override
     public MotoResponseAdminDto trouver(long id) throws EntityNotFoundException {
         Optional<Moto> optMoto = motoDao.findById(id);
@@ -71,6 +93,13 @@ public class MotoServiceImpl implements MotoService {
         return motoMapper.toMotoResponseAdminDto(moto);
     }
 
+
+    /**
+     * <p>La méthode <code>supprimer</code> permet de supprimer une moto en fonction de son identifiant.</p>
+     *
+     * @param id L'identifiant de la moto à supprimer.
+     * @throws EntityNotFoundException Si la moto avec l'id spécifié n'est pas trouvée.
+     */
     @Override
     public void supprimer(long id) throws EntityNotFoundException {
         if (motoDao.existsById(id))
@@ -80,8 +109,18 @@ public class MotoServiceImpl implements MotoService {
         //TODO: si y a pas de location, fait ceci, sinon, mettre le retire en true
     }
 
+
+    /**
+     * <p>La méthode <code>modifier</code> permet de modifier les informations d'une moto existante.</p>
+     *
+     * @param id L'id de la moto à modifier.
+     * @param motoRequestDto Les nouvelles informations de la moto.
+     * @return Une réponse contenant les informations mises à jour de la moto.
+     * @throws VehiculeException Si les informations de la moto sont invalides.
+     * @throws EntityNotFoundException Si la moto avec l'id spécifié n'est pas trouvée.
+     */
     @Override
-    public MotoResponseAdminDto modifier(long id, MotoRequestDto motoRequestDto) throws MotoException, EntityNotFoundException {
+    public MotoResponseAdminDto modifier(long id, MotoRequestDto motoRequestDto) throws VehiculeException, EntityNotFoundException {
         Optional<Moto> optMoto = motoDao.findById(id);
         if (optMoto.isEmpty())
             throw new EntityNotFoundException(ID_NON_PRESENT);
@@ -92,35 +131,45 @@ public class MotoServiceImpl implements MotoService {
         return motoMapper.toMotoResponseAdminDto(motoEnreg);
     }
 
+
+    private static void genererPermisMoto(Moto moto) {
+        if (moto.getCylindree() <= 125 && moto.getPuissance()<= 11)
+            moto.setPermis(List.of(Permis.A1,Permis.A2,Permis.A));
+        if( moto.getCylindree() > 125 && moto.getPuissance()<=35)
+            moto.setPermis(List.of(Permis.A2,Permis.A));
+        else
+            moto.setPermis(List.of(Permis.A));
+    }
+
     private static void verifierEtRemplacer(Moto nouvelle, Moto motoExiste) {
         if (nouvelle == null)
-            throw new MotoException("la nouvelle moto est null");
+            throw new VehiculeException("la nouvelle moto est null");
         if (nouvelle.getMarque() != null) {
             if (nouvelle.getMarque().isBlank())
-                throw new MotoException("la marque de la moto est absente");
+                throw new VehiculeException("la marque de la moto est absente");
             motoExiste.setMarque(nouvelle.getMarque());
         }
         if (nouvelle.getModele() != null) {
             if (nouvelle.getModele().isBlank())
-                throw new MotoException("le modèle de la moto est absent");
+                throw new VehiculeException("le modèle de la moto est absent");
             motoExiste.setModele(nouvelle.getModele());
         }
         if (nouvelle.getCouleur() != null) {
             if (nouvelle.getCouleur().isBlank())
-                throw new MotoException("la couleur de la moto est absente");
+                throw new VehiculeException("la couleur de la moto est absente");
             motoExiste.setCouleur(nouvelle.getCouleur());
         }
 
-        if (nouvelle.getType() != null)
-            motoExiste.setType(nouvelle.getType());
-        if (nouvelle.getTarifParJour() != null) {
-            if (nouvelle.getTarifParJour() <= 0)
-                throw new MotoException("le tarif par jour est absent ou il est négatif");
-            motoExiste.setTarifParJour(nouvelle.getTarifParJour());
+        if (nouvelle.getTypeMoto() != null)
+            motoExiste.setTypeMoto(nouvelle.getTypeMoto());
+        if (nouvelle.getTarif() != null) {
+            if (nouvelle.getTarif() <= 0)
+                throw new VehiculeException("le tarif par jour est absent ou il est négatif");
+            motoExiste.setTarif(nouvelle.getTarif());
         }
         if (nouvelle.getKilometrage() != null) {
             if (nouvelle.getKilometrage() <= 0)
-                throw new MotoException("le kilometrage est absent ou il est négatif");
+                throw new VehiculeException("le kilometrage est absent ou il est négatif");
             motoExiste.setKilometrage(nouvelle.getKilometrage());
         }
         if (nouvelle.getActif() != null)
@@ -128,32 +177,32 @@ public class MotoServiceImpl implements MotoService {
         if (nouvelle.getRetire() != null)
             motoExiste.setRetire(nouvelle.getRetire());
         if(motoExiste.getActif() && motoExiste.getRetire())
-            throw new MotoException("la moto qui est retirée depuis le parc ne peut pas être activée !");
+            throw new VehiculeException("la moto qui est retirée depuis le parc ne peut pas être activée !");
         //TODO : vérifier Permis ou pas
     }
 
 
-    private static void verifierMoto(MotoRequestDto dto) throws MotoException {
+    private static void verifierMoto(MotoRequestDto dto) throws VehiculeException {
         if (dto == null)
-            throw new MotoException("le motoRequestDto est null");
+            throw new VehiculeException("le motoRequestDto est null");
         if (dto.marque() == null || dto.marque().isBlank())
-            throw new MotoException("la marque de la moto est absente");
+            throw new VehiculeException("la marque de la moto est absente");
         if (dto.modele() == null || dto.modele().isBlank())
-            throw new MotoException("le modèle de la moto est absent");
+            throw new VehiculeException("le modèle de la moto est absent");
         if (dto.couleur() == null || dto.couleur().isBlank())
-            throw new MotoException("la couleur de la moto est absente");
+            throw new VehiculeException("la couleur de la moto est absente");
         if (dto.type() == null)
-            throw new MotoException("le type de la moto est absent");
-        if (dto.tarifParJour() == null || dto.tarifParJour() <= 0)
-            throw new MotoException("le tarif par jour est absent ou il est négatif");
+            throw new VehiculeException("le type de la moto est absent");
+        if (dto.tarif() == null || dto.tarif() <= 0)
+            throw new VehiculeException("le tarif par jour est absent ou il est négatif");
         if (dto.kilometrage() == null || dto.kilometrage() <= 0)
-            throw new MotoException("le kilometrage est absent ou il est négatif");
+            throw new VehiculeException("le kilometrage est absent ou il est négatif");
         if (dto.actif() == null)
-            throw new MotoException("l'actif est absent");
+            throw new VehiculeException("l'actif est absent");
         if (dto.retire() == null)
-            throw new MotoException("le retire est absent");
+            throw new VehiculeException("le retire est absent");
         if(dto.retire() && dto.actif())
-            throw new MotoException("la moto qui est retirée depuis le parc ne peut pas être activée !");
+            throw new VehiculeException("la moto qui est retirée depuis le parc ne peut pas être activée !");
     }
     //TODO : vérifier Permis ou pas
 }

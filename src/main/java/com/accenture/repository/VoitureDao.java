@@ -1,7 +1,6 @@
 package com.accenture.repository;
 
 import com.accenture.repository.entity.vehicule.Voiture;
-import com.accenture.service.dto.vehiculeDto.VoitureResponseAdminDto;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

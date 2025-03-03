@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-@DiscriminatorColumn(name = "DISCR")
 public abstract class UtilisateurConnecte {
     @Id
     @GeneratedValue(strategy = GenerationType.TABLE)

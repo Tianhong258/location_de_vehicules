@@ -1,15 +1,15 @@
 package com.accenture.service;
 
 
-import com.accenture.exception.ClientException;
+import com.accenture.exception.UtilisateurException;
 import com.accenture.model.Permis;
 import com.accenture.repository.ClientDao;
 import com.accenture.repository.entity.utilisateur.Adresse;
 import com.accenture.repository.entity.utilisateur.Client;
-import com.accenture.service.dto.utilisateurDto.AdresseDto;
-import com.accenture.service.dto.utilisateurDto.ClientRequestDto;
-import com.accenture.service.dto.utilisateurDto.ClientResponseDto;
-import com.accenture.service.mapper.utilisateurMapper.ClientMapper;
+import com.accenture.service.dto.utilisateur.AdresseDto;
+import com.accenture.service.dto.utilisateur.ClientRequestDto;
+import com.accenture.service.dto.utilisateur.ClientResponseDto;
+import com.accenture.service.mapper.utilisateur.ClientMapper;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -43,118 +43,118 @@ class ClientServiceImplTest {
     @DisplayName("Test de la méthode ajouter(dto null) exception levée")
     @Test
     void testAjouterNull() {
-        assertThrows(ClientException.class, () -> service.ajouter(null));
+        assertThrows(UtilisateurException.class, () -> service.ajouter(null));
     }
 
     @DisplayName("Test de la méthode ajouter(avec nom null) exception levée")
     @Test
     void testAjouterAvecNomNull() {
         ClientRequestDto dto = new ClientRequestDto(null, "Tanya", "tanya@gmail.com", "333Tanya@", new AdresseDto("parmi les tracteurs","44000","Jardin"), LocalDate.of(2000, 5,23), Arrays.asList(Permis.A, Permis.B));
-        assertThrows(ClientException.class, () -> service.ajouter(dto));
+        assertThrows(UtilisateurException.class, () -> service.ajouter(dto));
     }
 
     @DisplayName("Test de la méthode ajouter(avec nom blank) exception levée")
     @Test
     void testAjouterAvecNomBlank() {
         ClientRequestDto dto = new ClientRequestDto("   ", "Tanya", "tanya@gmail.com", "333Tanya@", new AdresseDto("parmi les tracteurs","44000","Jardin"), LocalDate.of(2000, 5,23), Arrays.asList(Permis.A, Permis.B));
-        assertThrows(ClientException.class, () -> service.ajouter(dto));
+        assertThrows(UtilisateurException.class, () -> service.ajouter(dto));
     }
 
     @DisplayName("Test de la méthode ajouter(avec prenom null) exception levée")
     @Test
     void testAjouterAvecPrenomNull() {
         ClientRequestDto dto = new ClientRequestDto("Huang", null, "tanya@gmail.com", "333Tanya@", new AdresseDto("parmi les tracteurs","44000","Jardin"), LocalDate.of(2000, 5,23), Arrays.asList(Permis.A, Permis.B));
-        assertThrows(ClientException.class, () -> service.ajouter(dto));
+        assertThrows(UtilisateurException.class, () -> service.ajouter(dto));
     }
 
     @DisplayName("Test de la méthode ajouter(avec prenom blank) exception levée")
     @Test
     void testAjouterAvecPrenomBlank() {
         ClientRequestDto dto = new ClientRequestDto("Huang", "     ", "tanya@gmail.com", "333Tanya@", new AdresseDto("parmi les tracteurs","44000","Jardin"), LocalDate.of(2000, 5,23), Arrays.asList(Permis.A, Permis.B));
-        assertThrows(ClientException.class, () -> service.ajouter(dto));
+        assertThrows(UtilisateurException.class, () -> service.ajouter(dto));
     }
 
     @DisplayName("Test de la méthode ajouter(avec mail null) exception levée")
     @Test
     void testAjouterAvecMailNull() {
         ClientRequestDto dto = new ClientRequestDto("Huang", "Tanya", null, "333Tanya@", new AdresseDto("parmi les tracteurs","44000","Jardin"), LocalDate.of(2000, 5,23), Arrays.asList(Permis.A, Permis.B));
-        assertThrows(ClientException.class, () -> service.ajouter(dto));
+        assertThrows(UtilisateurException.class, () -> service.ajouter(dto));
     }
 
     @DisplayName("Test de la méthode ajouter(avec mail blank) exception levée")
     @Test
     void testAjouterAvecMailBlank() {
         ClientRequestDto dto = new ClientRequestDto("Huang", "Tanya", "      ", "333Tanya@", new AdresseDto("parmi les tracteurs","44000","Jardin"), LocalDate.of(2000, 5,23), Arrays.asList(Permis.A, Permis.B));
-        assertThrows(ClientException.class, () -> service.ajouter(dto));
+        assertThrows(UtilisateurException.class, () -> service.ajouter(dto));
     }
 
     @DisplayName("Test de la méthode ajouter(avec password null) exception levée")
     @Test
     void testAjouterAvecPasswordNull() {
         ClientRequestDto dto = new ClientRequestDto("Huang", "Tanya", "tanya@gmail.com", null, new AdresseDto("parmi les tracteurs","44000","Jardin"), LocalDate.of(2000, 5,23), Arrays.asList(Permis.A, Permis.B));
-        assertThrows(ClientException.class, () -> service.ajouter(dto));
+        assertThrows(UtilisateurException.class, () -> service.ajouter(dto));
     }
 
     @DisplayName("Test de la méthode ajouter(avec password blank) exception levée")
     @Test
     void testAjouterAvecPasswordBlank() {
         ClientRequestDto dto = new ClientRequestDto("Huang", "Tanya", "tanya@gmail.com", "      ", new AdresseDto("parmi les tracteurs","44000","Jardin"), LocalDate.of(2000, 5,23), Arrays.asList(Permis.A, Permis.B));
-        assertThrows(ClientException.class, () -> service.ajouter(dto));
+        assertThrows(UtilisateurException.class, () -> service.ajouter(dto));
     }
 
     @DisplayName("Test de la méthode ajouter(avec adresse null) exception levée")
     @Test
     void testAjouterAvecAdresseNull() {
         ClientRequestDto dto = new ClientRequestDto("Huang", "Tanya", "tanya@gmail.com", "333Tanya@", null, LocalDate.of(2000, 5,23), Arrays.asList(Permis.A, Permis.B));
-        assertThrows(ClientException.class, () -> service.ajouter(dto));
+        assertThrows(UtilisateurException.class, () -> service.ajouter(dto));
     }
 
     @DisplayName("Test de la méthode ajouter(avec rue null) exception levée")
     @Test
     void testAjouterAvecRueNull() {
         ClientRequestDto dto = new ClientRequestDto("Huang", "Tanya", "tanya@gmail.com", "333Tanya@", new AdresseDto(null,"44000","Jardin"), LocalDate.of(2000, 5,23), Arrays.asList(Permis.A, Permis.B));
-        assertThrows(ClientException.class, () -> service.ajouter(dto));
+        assertThrows(UtilisateurException.class, () -> service.ajouter(dto));
     }
     @DisplayName("Test de la méthode ajouter(avec rue blank) exception levée")
     @Test
     void testAjouterAvecRueBlank() {
         ClientRequestDto dto = new ClientRequestDto("Huang", "Tanya", "tanya@gmail.com", "333Tanya@", new AdresseDto("      ","44000","Jardin"), LocalDate.of(2000, 5,23), Arrays.asList(Permis.A, Permis.B));
-        assertThrows(ClientException.class, () -> service.ajouter(dto));
+        assertThrows(UtilisateurException.class, () -> service.ajouter(dto));
     }
 
     @DisplayName("Test de la méthode ajouter(avec codePostal null) exception levée")
     @Test
     void testAjouterAvecCodePostalNull() {
         ClientRequestDto dto = new ClientRequestDto("Huang", "Tanya", "tanya@gmail.com","333Tanya@", new AdresseDto("parmi les tracteurs",null,"Jardin"), LocalDate.of(2000, 5,23), Arrays.asList(Permis.A, Permis.B));
-        assertThrows(ClientException.class, () -> service.ajouter(dto));
+        assertThrows(UtilisateurException.class, () -> service.ajouter(dto));
     }
 
     @DisplayName("Test de la méthode ajouter(avec codePostal blank) exception levée")
     @Test
     void testAjouterAvecCodePostalBlank() {
         ClientRequestDto dto = new ClientRequestDto("Huang", "Tanya", "tanya@gmail.com","333Tanya@", new AdresseDto("parmi les tracteurs","    ","Jardin"), LocalDate.of(2000, 5,23), Arrays.asList(Permis.A, Permis.B));
-        assertThrows(ClientException.class, () -> service.ajouter(dto));
+        assertThrows(UtilisateurException.class, () -> service.ajouter(dto));
     }
 
     @DisplayName("Test de la méthode ajouter(avec ville null) exception levée")
     @Test
     void testAjouterAvecVilleNull() {
         ClientRequestDto dto = new ClientRequestDto("Huang", "Tanya", "tanya@gmail.com","333Tanya@", new AdresseDto("parmi les tracteurs","44000",null), LocalDate.of(2000, 5,23), Arrays.asList(Permis.A, Permis.B));
-        assertThrows(ClientException.class, () -> service.ajouter(dto));
+        assertThrows(UtilisateurException.class, () -> service.ajouter(dto));
     }
 
     @DisplayName("Test de la méthode ajouter(avec ville blank) exception levée")
     @Test
     void testAjouterAvecVilleBlank() {
         ClientRequestDto dto = new ClientRequestDto("Huang", "Tanya", "tanya@gmail.com","333Tanya@", new AdresseDto("parmi les tracteurs","44000","    "), LocalDate.of(2000, 5,23), Arrays.asList(Permis.A, Permis.B));
-        assertThrows(ClientException.class, () -> service.ajouter(dto));
+        assertThrows(UtilisateurException.class, () -> service.ajouter(dto));
     }
 
     @DisplayName("Test de la méthode ajouter(avec dateNaissance null) exception levée")
     @Test
     void testAjouterAvecDateNaissanceNull() {
         ClientRequestDto dto = new ClientRequestDto("Huang", "Tanya", "tanya@gmail.com","333Tanya@", new AdresseDto("parmi les tracteurs","44000","Jardin"), null, Arrays.asList(Permis.A, Permis.B));
-        assertThrows(ClientException.class, () -> service.ajouter(dto));
+        assertThrows(UtilisateurException.class, () -> service.ajouter(dto));
     }
 
     @DisplayName("Test de la méthode ajouter(avec dateNaissance moins de 18 ans) exception levée")
@@ -163,7 +163,7 @@ class ClientServiceImplTest {
         int nouvelleAnnee = LocalDate.now().getYear()-10;
         LocalDate dateNaissance = LocalDate.of(nouvelleAnnee,LocalDate.now().getMonth(), LocalDate.now().getDayOfMonth());
         ClientRequestDto dto = new ClientRequestDto("Huang", "Tanya", "tanya@gmail.com","333Tanya@", new AdresseDto("parmi les tracteurs","44000","Jardin"), dateNaissance, Arrays.asList(Permis.A, Permis.B));
-        assertThrows(ClientException.class, () -> service.ajouter(dto));
+        assertThrows(UtilisateurException.class, () -> service.ajouter(dto));
     }
 
     //TODO : vérification de password et email
