@@ -19,6 +19,6 @@ import lombok.ToString;
 @EqualsAndHashCode(callSuper = true)
 public class Admin extends UtilisateurConnecte{
     private String fonction;
-    private String role = "ROLE_ADMIN";
+    private String role = "ADMIN";
 
 }

@@ -14,7 +14,7 @@ import java.net.URI;
 import java.util.List;
 
 @RestController
-@RequestMapping("motos")
+@RequestMapping("/motos")
 public class MotoController {
     private final MotoService motoService;
 
