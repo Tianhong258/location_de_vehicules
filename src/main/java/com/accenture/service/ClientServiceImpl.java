@@ -9,7 +9,10 @@ import com.accenture.service.dto.utilisateur.ClientRequestDto;
 import com.accenture.service.dto.utilisateur.ClientResponseDto;
 import com.accenture.service.mapper.utilisateur.ClientMapper;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.security.Principal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -17,17 +20,18 @@ import java.util.regex.Pattern;
 
 
 @Service
-public class ClientServiceImpl implements ClientService{
+public class ClientServiceImpl implements ClientService {
 
     private final ClientDao clientDao;
     private final ClientMapper clientMapper;
     private static final Pattern passwordPattern = Pattern.compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[&\\#@\\-_%§]).{6,}$");
-    //private final PasswordEncoder passwordEncoder;
+    private final PasswordEncoder passwordEncoder;
 
 
-    public ClientServiceImpl(ClientDao clientDao, ClientMapper clientMapper) {
+    public ClientServiceImpl(ClientDao clientDao, ClientMapper clientMapper, PasswordEncoder passwordEncoder) {
         this.clientDao = clientDao;
         this.clientMapper = clientMapper;
+        this.passwordEncoder = passwordEncoder;
     }
 
     /**
@@ -42,6 +46,8 @@ public class ClientServiceImpl implements ClientService{
     public ClientResponseDto ajouter(ClientRequestDto clientRequestDto) throws UtilisateurException {
         verifierClientRequestDto(clientRequestDto);
         Client client = clientMapper.toClient(clientRequestDto);
+        String passWordChiffre = passwordEncoder.encode(client.getPassword());
+        client.setPassword(passWordChiffre);
         Client clientEnreg = clientDao.save(client);
         return clientMapper.toClientResponseDto(clientEnreg);
     }
@@ -49,14 +55,12 @@ public class ClientServiceImpl implements ClientService{
     /**
      * <p>La méthode <code>trouver</code> permet de récupérer un client avec son email et mot de passe.</p>
      *
-     * @param email L'email du client.
-     * @param password Le mot de passe du client.
+     * @param principal Les informations du client connecté
      * @return Une réponse contenant les informations du client.
-     * @throws EntityNotFoundException Si le client avec les informations données n'est pas trouvé.
      */
     @Override
-    public ClientResponseDto trouver(String email, String password) throws EntityNotFoundException {
-        Client client = verifierEmailPassword(email,password);
+    public ClientResponseDto trouver(Principal principal) {
+        Client client = clientDao.findByEmail(principal.getName()).orElseThrow();
         return clientMapper.toClientResponseDto(client);
     }
 
@@ -77,14 +81,12 @@ public class ClientServiceImpl implements ClientService{
     /**
      * <p>La méthode <code>desactiverOuSupprimer</code> permet de désactiver ou supprimer un client.</p>
      *
-     * @param email L'email du client à désactiver ou supprimer.
-     * @param password Le mot de passe du client à désactiver ou supprimer.
+     * @param principal Les informations du client connecté
      * @throws UtilisateurException Si le client ne peut pas être désactivé ou supprimé.
-     * @throws EntityNotFoundException Si le client n'est pas trouvé.
      */
     @Override
-    public void desactiverOuSupprimer(String email, String password) throws UtilisateurException,EntityNotFoundException {
-        Client client = verifierEmailPassword(email, password);
+    public void desactiverOuSupprimer(Principal principal) throws UtilisateurException {
+        Client client = clientDao.findByEmail(principal.getName()).orElseThrow();
         clientDao.delete(client);
         //trouver les locations, s'il y a pas
         // l'utilisateur peut supprimer son compte : créer supprimer() et desactiver()
@@ -93,40 +95,17 @@ public class ClientServiceImpl implements ClientService{
         //clientDao.deleteByEmail(clientResponseDto.email());
     }
 
-
-    /**
-     * <p>La méthode <code>modifier</code> permet de modifier les informations d'un client.</p>
-     *
-     * @param email L'email du client à modifier.
-     * @param password Le mot de passe du client à modifier.
-     * @param clientRequestDto Les nouvelles informations du client.
-     * @return Une réponse contenant les informations mises à jour du client.
-     * @throws UtilisateurException Si les données du client sont invalides.
-     * @throws EntityNotFoundException Si le client n'est pas trouvé.
-     */
-    @Override
-    public ClientResponseDto modifier(String email, String password, ClientRequestDto clientRequestDto) throws UtilisateurException,EntityNotFoundException {
-        Client client = verifierEmailPassword(email, password);
-        Client clientModifie = clientMapper.toClient(clientRequestDto);
-        clientModifie.setId(client.getId());
-        clientDao.save(clientModifie);
-        return clientMapper.toClientResponseDto(clientModifie);
-    }
-
     /**
      * <p>La méthode <code>modifierPartiellement</code> permet de modifier partiellement les informations d'un client.</p>
      *
-     * @param email L'email du client à modifier.
-     * @param password Le mot de passe du client à modifier.
+     * @param principal        Les informations du client connecté
      * @param clientRequestDto Les nouvelles informations du client.
      * @return Une réponse contenant les informations mises à jour du client.
      * @throws UtilisateurException Si les données du client sont invalides.
-     * @throws EntityNotFoundException Si le client n'est pas trouvé.
      */
     @Override
-    public ClientResponseDto modifierPartiellement(String email, String password, ClientRequestDto clientRequestDto) throws UtilisateurException, EntityNotFoundException {
-        Client clientAModifier = verifierEmailPassword(email, password);
-        verifierClientRequestDto(clientRequestDto);
+    public ClientResponseDto modifierPartiellement(Principal principal, ClientRequestDto clientRequestDto) throws UtilisateurException {
+        Client clientAModifier = clientDao.findByEmail(principal.getName()).orElseThrow();
         Client nouveau = clientMapper.toClient(clientRequestDto);
         verifierEtRemplacer(nouveau, clientAModifier);
         Client clientEnreg = clientDao.save(clientAModifier);
@@ -134,14 +113,7 @@ public class ClientServiceImpl implements ClientService{
     }
 
 
-    private Client verifierEmailPassword(String email, String password) throws EntityNotFoundException{
-        Optional<Client> optClient = clientDao.findByEmailAndPassword(email, password);
-        if(optClient.isEmpty())
-            throw new EntityNotFoundException("Email n'existe pas ou password ne correspond pas");
-        return optClient.get();
-    }
-
-    private static void verifierEtRemplacer(Client client, Client clientAModifier) throws UtilisateurException{
+    private void verifierEtRemplacer(Client client, Client clientAModifier) throws UtilisateurException {
         if (client == null)
             throw new UtilisateurException("l'client est nulle");
         String clientNom = client.getNom();
@@ -150,39 +122,21 @@ public class ClientServiceImpl implements ClientService{
         String clientPassword = client.getPassword();
         Adresse clientAdresse = client.getAdresse();
         LocalDate clientDateNaissance = client.getDateNaissance();
-        if (clientNom != null && clientNom.isBlank())
-            throw new UtilisateurException("le nom du client est absent");
-        if(clientNom != null)
+        if (clientNom != null) {
+            if (clientNom.isBlank())
+                throw new UtilisateurException("le nom du client est absent");
             clientAModifier.setNom(clientNom);
-        if (clientPrenom != null && clientPrenom.isBlank())
-            throw new UtilisateurException("le prénom du client est absent");
-        if(clientPrenom != null)
+        }
+        if (clientPrenom != null) {
+            if (clientPrenom.isBlank())
+                throw new UtilisateurException("le prénom du client est absent");
             clientAModifier.setPrenom(clientPrenom);
-        if (clientEmail != null && clientEmail.isBlank())
-            throw new UtilisateurException("le mail du client est absent");
-        if (clientEmail != null && !clientEmail.contains("@"))
-            throw new UtilisateurException("le format de l'email du client est invalid");
-        if(clientEmail != null)
-            clientAModifier.setEmail(clientEmail);
-        if (clientPassword != null && clientPassword.isBlank())
-            throw new UtilisateurException("le password du client est absent");
-        if(clientPassword != null && !passwordPattern.matcher(clientPassword).matches())
-            throw new UtilisateurException("le format du password du client est invalid");
-        if(clientPassword != null)
-            clientAModifier.setPassword(clientPassword);
-        if (clientAdresse.getRue() != null && clientAdresse.getRue().isBlank())
-            throw new UtilisateurException("la rue du client est absent");
-        if(clientAdresse.getRue() != null)
-            clientAModifier.getAdresse().setRue(clientAdresse.getRue());
-        if (clientAdresse.getCodePostal() != null && clientAdresse.getCodePostal().isBlank())
-            throw new UtilisateurException("le code postal du client est absent");
-        if(clientAdresse.getCodePostal() != null)
-            clientAModifier.getAdresse().setCodePostal(clientAdresse.getCodePostal());
-        if (clientAdresse.getVille() != null && clientAdresse.getVille().isBlank())
-            throw new UtilisateurException("la ville du client est absent");
-        if(clientAdresse.getVille() != null)
-            clientAModifier.getAdresse().setVille(clientAdresse.getVille());
-        if(clientDateNaissance != null) {
+        }
+        verifierEtRamplacerEmailPassword(clientAModifier, clientEmail, clientPassword);
+        if (clientAdresse != null) {
+            verifierEtRemplacerAdresse(clientAModifier, clientAdresse);
+        }
+        if (clientDateNaissance != null) {
             int nouvelleAnnee = clientDateNaissance.getYear() + 18;
             LocalDate nouvelleDate = LocalDate.of(nouvelleAnnee, clientDateNaissance.getMonth(), clientDateNaissance.getDayOfMonth());
             if (nouvelleDate.isAfter(LocalDate.now()))
@@ -192,38 +146,81 @@ public class ClientServiceImpl implements ClientService{
 
     }
 
-    private static void verifierClientRequestDto(ClientRequestDto dto) throws UtilisateurException{
-        //TODO: controller de permis ?????
+    private static void verifierEtRemplacerAdresse(Client clientAModifier, Adresse clientAdresse) throws UtilisateurException {
+        if (clientAdresse.getRue() != null) {
+            if (clientAdresse.getRue().isBlank())
+                throw new UtilisateurException("la rue du client est absent");
+            clientAModifier.getAdresse().setRue(clientAdresse.getRue());
+        }
+        if (clientAdresse.getCodePostal() != null) {
+            if (clientAdresse.getCodePostal().isBlank())
+                throw new UtilisateurException("le code postal du client est absent");
+            clientAModifier.getAdresse().setCodePostal(clientAdresse.getCodePostal());
+        }
+        if (clientAdresse.getVille() != null) {
+            if (clientAdresse.getVille().isBlank())
+                throw new UtilisateurException("la ville du client est absent");
+            clientAModifier.getAdresse().setVille(clientAdresse.getVille());
+        }
+    }
+
+    private void verifierEtRamplacerEmailPassword(Client clientAModifier, String clientEmail, String clientPassword) throws UtilisateurException {
+        if (clientEmail != null) {
+            if (clientEmail.isBlank())
+                throw new UtilisateurException("le mail du client est absent");
+            if (!clientEmail.contains("@"))
+                throw new UtilisateurException("le format de l'email du client est invalid");
+            clientAModifier.setEmail(clientEmail);
+        }
+        if (clientPassword != null) {
+            if (clientPassword.isBlank()) {
+                throw new UtilisateurException("Le password du client est absent");
+            }
+            if (!passwordPattern.matcher(clientPassword).matches()) {
+                throw new UtilisateurException("Le format du mot de passe du client est invalide");
+            }
+            clientAModifier.setPassword(passwordEncoder.encode(clientPassword));
+        }
+    }
+
+    private static void verifierClientRequestDto(ClientRequestDto dto) throws UtilisateurException {
         if (dto == null)
             throw new UtilisateurException("le clientRequestDto est nulle");
         if (dto.nom() == null || dto.nom().isBlank())
             throw new UtilisateurException("le nom du client est absent");
         if (dto.prenom() == null || dto.prenom().isBlank())
             throw new UtilisateurException("le prénom du client est absent");
+        verifierEmailPassword(dto);
+        verifierAdresse(dto);
+        if (dto.dateNaissance() == null)
+            throw new UtilisateurException("la date de naissance du client est absent");
+        int nouvelleAnnee = dto.dateNaissance().getYear() + 18;
+        LocalDate nouvelleDate = LocalDate.of(nouvelleAnnee, dto.dateNaissance().getMonth(), dto.dateNaissance().getDayOfMonth());
+        if (nouvelleDate.isAfter(LocalDate.now()))
+            throw new UtilisateurException("pour vous inscrire sur notre site, il faut au moins 18 ans");
+
+    }
+
+    private static void verifierEmailPassword(ClientRequestDto dto) throws UtilisateurException {
         if (dto.email() == null || dto.email().isBlank())
             throw new UtilisateurException("le mail du client est absent");
-        if( ! dto.email().contains("@"))
+        if (!dto.email().contains("@"))
             throw new UtilisateurException("le format de l'email du client est invalid");
         if (dto.password() == null || dto.password().isBlank())
             throw new UtilisateurException("le password du client est absent");
-        if(!passwordPattern.matcher(dto.password()).matches())
+        if (!passwordPattern.matcher(dto.password()).matches())
             throw new UtilisateurException("le format du password du client est invalid");
-        if(dto.adresse() == null)
+    }
+
+    private static void verifierAdresse(ClientRequestDto dto) throws UtilisateurException {
+        if (dto.adresse() == null)
             throw new UtilisateurException("l'adresse du client est absent");
-        if(dto.adresse().rue()== null || dto.adresse().rue().isBlank())
+        if (dto.adresse().rue() == null || dto.adresse().rue().isBlank())
             throw new UtilisateurException("la rue du client est absent");
-        if(dto.adresse().codePostal() == null || dto.adresse().codePostal().isBlank())
+        if (dto.adresse().codePostal() == null || dto.adresse().codePostal().isBlank())
             throw new UtilisateurException("le code postal du client est absent");
-        if(dto.adresse().ville() == null || dto.adresse().ville().isBlank())
+        if (dto.adresse().ville() == null || dto.adresse().ville().isBlank())
             throw new UtilisateurException("la ville du client est absent");
-        if (dto.dateNaissance() == null)
-            throw new UtilisateurException("la date de naissance du client est absent");
-        int nouvelleAnnee = dto.dateNaissance().getYear()+18;
-        LocalDate nouvelleDate = LocalDate.of(nouvelleAnnee, dto.dateNaissance().getMonth(), dto.dateNaissance().getDayOfMonth());
-        if(nouvelleDate.isAfter(LocalDate.now()))
-            throw new UtilisateurException("pour vous inscrire sur notre site, il faut au moins 18 ans");
-
-
     }
 
 

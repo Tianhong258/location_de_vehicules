@@ -9,6 +9,7 @@ import com.accenture.service.dto.vehicule.VehiculeAdminDto;
 import com.accenture.service.dto.vehicule.VehiculeClientDto;
 import jakarta.persistence.EntityNotFoundException;
 
+import java.security.Principal;
 import java.time.LocalDate;
 
 
@@ -16,5 +17,5 @@ public interface VehiculeService {
 
     //VehiculeAdminDto trouverTous();
     VehiculeAdminDto filtrer(Filtre filtre);
-    VehiculeClientDto rechercherParDate(LocalDate debut, LocalDate fin, String password, String email, CategorieVehicule categorie) throws UtilisateurException, EntityNotFoundException;
+    VehiculeClientDto rechercherParDate(LocalDate debut, LocalDate fin, CategorieVehicule categorie) throws UtilisateurException, EntityNotFoundException;
 }

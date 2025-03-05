@@ -1,4 +1,4 @@
-package com.accenture.security;
+package com.accenture.configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,12 +33,20 @@ public class SecurityConfiguration {
                             .requestMatchers(HttpMethod.GET, "/vehicules/recherche").permitAll()
                             .requestMatchers(HttpMethod.POST, "/clients","/admins").permitAll()
                             .requestMatchers(HttpMethod.GET, "/clients/infos").hasAnyRole("ADMIN","CLIENT")
-                            .requestMatchers(HttpMethod.PUT, "/clients").hasAnyRole("ADMIN","CLIENT")
                             .requestMatchers(HttpMethod.PATCH, "/clients").hasAnyRole("ADMIN","CLIENT")
                             .requestMatchers(HttpMethod.DELETE, "/clients").hasAnyRole("ADMIN","CLIENT")
 
-                            .requestMatchers( "/admins/**","/motos/**","/voitures/**").hasRole("ADMIN")
-                            .requestMatchers(HttpMethod.GET,  "/clients", "/vehicules/filtrer") .hasRole("ADMIN")
+                            .requestMatchers(HttpMethod.GET, "/locations/**").hasRole("ADMIN")
+                            .requestMatchers(HttpMethod.PATCH, "/locations/**").hasRole("ADMIN")
+                            .requestMatchers(HttpMethod.DELETE, "/locations/**").hasRole("ADMIN")
+                            .requestMatchers(HttpMethod.POST, "/locations/**").hasAnyRole("ADMIN","CLIENT")
+
+
+                            .requestMatchers(HttpMethod.GET, "/admins/**").hasRole("ADMIN")
+                            .requestMatchers(HttpMethod.PATCH, "/admins/**").hasRole("ADMIN")
+                            .requestMatchers(HttpMethod.DELETE, "/admins/**").hasRole("ADMIN")
+                            .requestMatchers( "/motos/**","/voitures/**").hasRole("ADMIN")
+                            .requestMatchers(HttpMethod.GET, "/clients", "/vehicules/filtrer") .hasRole("ADMIN")
                             .anyRequest().authenticated()
                 );
         return http.build();

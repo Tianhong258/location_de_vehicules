@@ -5,19 +5,18 @@ import com.accenture.service.dto.utilisateur.AdminRequestDto;
 import com.accenture.service.dto.utilisateur.AdminResponseDto;
 import jakarta.persistence.EntityNotFoundException;
 
+import java.security.Principal;
 import java.util.List;
 
 public interface AdminService {
     AdminResponseDto ajouter(AdminRequestDto adminRequestDto) throws UtilisateurException;
 
-    AdminResponseDto trouver(String email, String password) throws UtilisateurException, EntityNotFoundException;
+    AdminResponseDto trouver(Principal principal);
 
     List<AdminResponseDto> trouverTous();
 
-    void supprimer(String email, String password) throws EntityNotFoundException, UtilisateurException;
+    void supprimer(Principal principal) throws UtilisateurException;
 
-    AdminResponseDto modifier(String email, String password, AdminRequestDto adminRequestDto) throws EntityNotFoundException, UtilisateurException;
-
-    AdminResponseDto modifierPartiellement(String email, String password, AdminRequestDto adminRequestDto) throws UtilisateurException, EntityNotFoundException;
+    AdminResponseDto modifierPartiellement(Principal principal, AdminRequestDto adminRequestDto) throws UtilisateurException;
 
 }

@@ -16,19 +16,19 @@ import java.time.LocalDate;
 public class Location {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    long id;
+    private long id;
     @ManyToOne
-    Client client;
+    private Client client;
     @ManyToOne
-    Vehicule vehicule;
+    private Vehicule vehicule;
 //    @ManyToMany(cascade = CascadeType.PERSIST)
 //    @JoinTable(name = "locationsAccessoires")
 //    List<Accessoire> accessoire;
-    LocalDate debut;
-    LocalDate fin;
-    Integer kilometres;
-    Double montant;
-    LocalDate dateValidation;
+    private LocalDate debut;
+    private LocalDate fin;
+    private Integer kilometrage;
+    private Double montant;
+    private LocalDate dateValidation = LocalDate.now();
     @Enumerated(EnumType.STRING)
-    Etat etat;
+    private Etat etat;
 }

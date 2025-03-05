@@ -42,8 +42,6 @@ public class VoitureServiceImpl implements VoitureService {
         return voitureMapper.toVoitureResponseAdminDto(voitureEnreg);
     }
 
-
-
     /**
      * <p>La méthode <code>trouverToutes</code> permet de récupérer toutes les voitures, triées par leur statut actif et retiré.</p>
      *
@@ -141,6 +139,55 @@ public class VoitureServiceImpl implements VoitureService {
     private static void verifierEtRemplacer(Voiture nouvelle, Voiture voitureExiste) {
         if (nouvelle == null)
             throw new VehiculeException("la nouvelle voiture est null");
+        verifierRemplacerMarqueModele(nouvelle, voitureExiste);
+        verifierRemplacerCouleurNomPlaces(nouvelle, voitureExiste);
+        verifierRemplacerPortesCarburantTrans(nouvelle, voitureExiste);
+        verifierRemplacerClimaType(nouvelle, voitureExiste);
+        verifierRemplacerBagagesTarifKilo(nouvelle, voitureExiste);
+        verifierRemplacerActifRetire(nouvelle, voitureExiste);
+        //TODO : vérifier Permis ou pas
+    }
+
+
+    private static void verifierVoiture(VoitureRequestDto dto) throws VehiculeException {
+        if (dto == null)
+            throw new VehiculeException("le voitureRequestDto est null");
+        verifierMarqueModeleCouleur(dto);
+        verifierPlacesPortesCarburant(dto);
+        verifierTransClimaBagages(dto);
+        verifierTypeTarifKilo(dto);
+        verifierActifRetire(dto);
+        //TODO : vérifier Permis ou pas, pourquoi les Integer ne peuvent pas être null ?
+    }
+
+    private static void verifierRemplacerActifRetire(Voiture nouvelle, Voiture voitureExiste) {
+        if (nouvelle.getActif() != null)
+            voitureExiste.setActif(nouvelle.getActif());
+        if (nouvelle.getRetire() != null)
+            voitureExiste.setRetire(nouvelle.getRetire());
+        if(voitureExiste.getActif() && voitureExiste.getRetire())
+            throw new VehiculeException("la voiture qui est retirée depuis le parc ne peut pas être activée !");
+    }
+
+    private static void verifierRemplacerClimaType(Voiture nouvelle, Voiture voitureExiste) {
+        if (nouvelle.getClimatisation() != null)
+            voitureExiste.setClimatisation(nouvelle.getClimatisation());
+        if (nouvelle.getTypeVoiture() != null)
+            voitureExiste.setTypeVoiture(nouvelle.getTypeVoiture());
+    }
+
+    private static void verifierRemplacerPortesCarburantTrans(Voiture nouvelle, Voiture voitureExiste) {
+        if (nouvelle.getNombrePortes() != null) {
+            voitureExiste.setNombrePortes(nouvelle.getNombrePortes());
+        }
+        if (nouvelle.getTypeCarburant() != null)
+            voitureExiste.setTypeCarburant(nouvelle.getTypeCarburant());
+        if (nouvelle.getTransmission() != null)
+            voitureExiste.setTransmission(nouvelle.getTransmission());
+    }
+
+
+    private static void verifierRemplacerMarqueModele(Voiture nouvelle, Voiture voitureExiste) {
         if (nouvelle.getMarque() != null) {
             if (nouvelle.getMarque().isBlank())
                 throw new VehiculeException("la marque de la voiture est absente");
@@ -151,6 +198,9 @@ public class VoitureServiceImpl implements VoitureService {
                 throw new VehiculeException("le modèle de la voiture est absent");
             voitureExiste.setModele(nouvelle.getModele());
         }
+    }
+
+    private static void verifierRemplacerCouleurNomPlaces(Voiture nouvelle, Voiture voitureExiste) {
         if (nouvelle.getCouleur() != null) {
             if (nouvelle.getCouleur().isBlank())
                 throw new VehiculeException("la couleur de la voiture est absente");
@@ -161,23 +211,15 @@ public class VoitureServiceImpl implements VoitureService {
                 throw new VehiculeException("le nombre de places est absent ou il est négatif");
             voitureExiste.setNombrePlaces(nouvelle.getNombrePlaces());
         }
-        if (nouvelle.getNombrePortes() != null) {
-            voitureExiste.setNombrePortes(nouvelle.getNombrePortes());
-        }
-        if (nouvelle.getTypeCarburant() != null)
-            voitureExiste.setTypeCarburant(nouvelle.getTypeCarburant());
-        if (nouvelle.getTransmission() != null)
-            voitureExiste.setTransmission(nouvelle.getTransmission());
-        if (nouvelle.getClimatisation() != null)
-            voitureExiste.setClimatisation(nouvelle.getClimatisation());
+    }
 
+    private static void verifierRemplacerBagagesTarifKilo(Voiture nouvelle, Voiture voitureExiste) {
         if (nouvelle.getNombreBagages() != null) {
             if (nouvelle.getNombreBagages() <= 0)
                 throw new VehiculeException("le nombre de bagages est absent ou il est négatif");
             voitureExiste.setNombreBagages(nouvelle.getNombreBagages());
         }
-        if (nouvelle.getTypeVoiture() != null)
-            voitureExiste.setTypeVoiture(nouvelle.getTypeVoiture());
+
         if (nouvelle.getTarif() != null) {
             if (nouvelle.getTarif() <= 0)
                 throw new VehiculeException("le tarif par jour est absent ou il est négatif");
@@ -188,50 +230,52 @@ public class VoitureServiceImpl implements VoitureService {
                 throw new VehiculeException("le kilometrage est absent ou il est négatif");
             voitureExiste.setKilometrage(nouvelle.getKilometrage());
         }
-        if (nouvelle.getActif() != null)
-            voitureExiste.setActif(nouvelle.getActif());
-        if (nouvelle.getRetire() != null)
-            voitureExiste.setRetire(nouvelle.getRetire());
-        if(voitureExiste.getActif() && voitureExiste.getRetire())
-            throw new VehiculeException("la voiture qui est retirée depuis le parc ne peut pas être activée !");
-        //TODO : vérifier Permis ou pas
     }
 
 
-    private static void verifierVoiture(VoitureRequestDto dto) throws VehiculeException {
-        if (dto == null)
-            throw new VehiculeException("le voitureRequestDto est null");
-        if (dto.marque() == null || dto.marque().isBlank())
-            throw new VehiculeException("la marque de la voiture est absente");
-        if (dto.modele() == null || dto.modele().isBlank())
-            throw new VehiculeException("le modèle de la voiture est absent");
-        if (dto.couleur() == null || dto.couleur().isBlank())
-            throw new VehiculeException("la couleur de la voiture est absente");
-        if (dto.nombrePlaces() == null || dto.nombrePlaces() <= 0)
-            throw new VehiculeException("le nombre de places est absent ou il est négatif");
-        if (dto.nombrePortes() == null)
-            throw new VehiculeException("le nombre de portes est absent");
-        if (dto.typeCarburant() == null)
-            throw new VehiculeException("le type de carburant de la voiture est absent");
-        if (dto.transmission() == null)
-            throw new VehiculeException("la transmission de la voiture est absente");
-        if (dto.climatisation() == null)
-            throw new VehiculeException("la climatisation est absent");
-        if (dto.nombreBagages() == null || dto.nombreBagages() < 0)
-            throw new VehiculeException("le nombre de bagages est absent ou il est négatif");
-        if (dto.type() == null)
-            throw new VehiculeException("le type de la voiture est absent");
-        if (dto.tarif() == null || dto.tarif() < 0)
-            throw new VehiculeException("le tarif par jour est absent ou il est négatif");
-        if (dto.kilometrage() == null || dto.kilometrage() < 0)
-            throw new VehiculeException("le kilometrage est absent ou il est négatif");
+    private static void verifierActifRetire(VoitureRequestDto dto) {
         if (dto.actif() == null)
             throw new VehiculeException("l'actif est absent");
         if (dto.retire() == null)
             throw new VehiculeException("le retire est absent");
         if(dto.retire() && dto.actif())
             throw new VehiculeException("la voiture qui est retirée depuis le parc ne peut pas être activée !");
-        //TODO : vérifier Permis ou pas, pourquoi les Integer ne peuvent pas être null ?
+    }
+
+    private static void verifierTypeTarifKilo(VoitureRequestDto dto) {
+        if (dto.type() == null)
+            throw new VehiculeException("le type de la voiture est absent");
+        if (dto.tarif() == null || dto.tarif() < 0)
+            throw new VehiculeException("le tarif par jour est absent ou il est négatif");
+        if (dto.kilometrage() == null || dto.kilometrage() < 0)
+            throw new VehiculeException("le kilometrage est absent ou il est négatif");
+    }
+
+    private static void verifierTransClimaBagages(VoitureRequestDto dto) {
+        if (dto.transmission() == null)
+            throw new VehiculeException("la transmission de la voiture est absente");
+        if (dto.climatisation() == null)
+            throw new VehiculeException("la climatisation est absent");
+        if (dto.nombreBagages() == null || dto.nombreBagages() < 0)
+            throw new VehiculeException("le nombre de bagages est absent ou il est négatif");
+    }
+
+    private static void verifierPlacesPortesCarburant(VoitureRequestDto dto) {
+        if (dto.nombrePlaces() == null || dto.nombrePlaces() <= 0)
+            throw new VehiculeException("le nombre de places est absent ou il est négatif");
+        if (dto.nombrePortes() == null)
+            throw new VehiculeException("le nombre de portes est absent");
+        if (dto.typeCarburant() == null)
+            throw new VehiculeException("le type de carburant de la voiture est absent");
+    }
+
+    private static void verifierMarqueModeleCouleur(VoitureRequestDto dto) {
+        if (dto.marque() == null || dto.marque().isBlank())
+            throw new VehiculeException("la marque de la voiture est absente");
+        if (dto.modele() == null || dto.modele().isBlank())
+            throw new VehiculeException("le modèle de la voiture est absent");
+        if (dto.couleur() == null || dto.couleur().isBlank())
+            throw new VehiculeException("la couleur de la voiture est absente");
     }
 
 }

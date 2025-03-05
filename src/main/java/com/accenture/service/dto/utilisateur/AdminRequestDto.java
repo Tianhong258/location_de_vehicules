@@ -1,26 +1,35 @@
 package com.accenture.service.dto.utilisateur;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 
+@Schema(description = "Détails de la demande d'administrateur")
 public record AdminRequestDto (
-        @NotBlank
-        @Size(min=3, max=20, message = "Le nom doit être entre 3 et 20 caractères")
+        @Schema(description = "Nom de l'administrateur", example = "Huang")
+        @NotBlank(message = "Le nom est obligatoire")
+        @Size(min = 3, max = 20, message = "Le nom doit être entre 3 et 20 caractères")
         String nom,
-        @NotBlank
-        @Size(min=3, max=20, message = "Le prénom doit être entre 3 et 20 caractères")
+
+        @Schema(description = "Prénom de l'administrateur", example = "Tanya")
+        @NotBlank(message = "Le prénom est obligatoire")
+        @Size(min = 3, max = 20, message = "Le prénom doit être entre 3 et 20 caractères")
         String prenom,
-        @NotNull
+
+        @Schema(description = "Email de l'administrateur", example = "tanyaAdmin@gamil.com")
+        @NotNull(message = "L'email est obligatoire")
         @Email(message = "Le format du mail est invalide")
         String email,
-        @NotBlank
-        @Size(min=8, max=16, message = "Le mot de passe doit être entre 8 et 16 caractères")
-        //TODO: vérifier c'est quoi tout ça
+
+        @Schema(description = "Mot de passe de l'administrateur", example = "345Tanya@")
+        @NotBlank(message = "Le mot de passe est obligatoire")
+        @Size(min = 8, max = 16, message = "Le mot de passe doit être entre 8 et 16 caractères")
         @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[&\\#@\\-_%§]).{6,}$",
-                message = "Le mot de passe doit contenir au moins une lettre majuscule, une lettre minuscule, et un des symboles suivants : & # @ - _ §"
-        )
+                message = "Le mot de passe doit contenir au moins une lettre majuscule, une lettre minuscule, et un des symboles suivants : & # @ - _ §")
         String password,
-        @NotBlank
-        @Size(min=3, max=20, message = "La fonction doit être entre 3 et 20 caractères")
+
+        @Schema(description = "Fonction de l'administrateur", example = "CEO")
+        @NotBlank(message = "La fonction est obligatoire")
+        @Size(min = 3, max = 20, message = "La fonction doit être entre 3 et 20 caractères")
         String fonction
 
 ) {

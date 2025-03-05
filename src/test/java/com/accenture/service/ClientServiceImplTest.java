@@ -18,7 +18,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.security.Principal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,6 +38,12 @@ class ClientServiceImplTest {
 
     @Mock
     ClientMapper mapperMock;
+
+    @Mock
+    Principal principalMock;
+
+    @Mock
+    PasswordEncoder passwordEncoderMock;
 
     @InjectMocks
     ClientServiceImpl service;
@@ -185,24 +193,17 @@ class ClientServiceImplTest {
         Mockito.verify(daoMock, Mockito.times(1)).save(clientAvantEnreg);
     }
 
-    @DisplayName("Test de la méthode trouver(email n'existe pas en base ou password n'est pas correct) exception levée")
-    @Test
-    void testTrouverAvecEmailOuPasswordIncorrect() {
-        Mockito.when(daoMock.findByEmailAndPassword("tanya@gmail.com","345Tanya@")).thenReturn(Optional.empty());
-        EntityNotFoundException ex = assertThrows(EntityNotFoundException.class, () -> service.trouver("tanya@gmail.com", "345Tanya@"));
-        assertEquals("Email n'existe pas ou password ne correspond pas", ex.getMessage());
-    }
-
 
     @DisplayName("Test de la méthode trouver(ok) qui doit renvoyer un ClientResponseDto")
     @Test
     void testTrouverOk() {
         Client c = creerClient();
         Optional<Client> optClient = Optional.of(c);
-        Mockito.when(daoMock.findByEmailAndPassword("tanya@gmail.com","345Tanya@")).thenReturn(optClient);
+        Mockito.when(daoMock.findByEmail("tanya@gmail.com")).thenReturn(optClient);
         ClientResponseDto clientResponseDto = clientResponseDto();
         Mockito.when(mapperMock.toClientResponseDto(c)).thenReturn(clientResponseDto);
-        assertSame(clientResponseDto, service.trouver("tanya@gmail.com", "345Tanya@"));
+        Mockito.when(principalMock.getName()).thenReturn("tanya@gmail.com");
+        assertSame(clientResponseDto, service.trouver(principalMock));
     }
 
     @DisplayName("""

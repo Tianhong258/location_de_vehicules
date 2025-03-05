@@ -28,7 +28,7 @@ public class Client extends UtilisateurConnecte{
     @Enumerated(EnumType.STRING)
     private List<Permis> listePermis;
     private Boolean desactive = false;
-    private String role = "CLIENT";
+    private String role = "ROLE_CLIENT";
 
 
 }

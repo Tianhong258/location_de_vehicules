@@ -2,7 +2,9 @@ package com.accenture.controller.advice;
 
 import com.accenture.exception.*;
 import com.accenture.model.ErreurReponse;
+import com.accenture.repository.entity.location.Location;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
+@Slf4j
 @RestControllerAdvice
 public class ApplicationControllerAdvice {
     /**
@@ -24,6 +27,7 @@ public class ApplicationControllerAdvice {
      */
     @ExceptionHandler(UtilisateurException.class)
     public ResponseEntity<ErreurReponse> gestionUtilisateurException(UtilisateurException ex){
+        log.error("Erreur fonctionnelle : {}", ex.getMessage(), ex);
         ErreurReponse er = new ErreurReponse(LocalDateTime.now(), "Erreur fonctionnelle", ex.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(er);
     }
@@ -38,6 +42,21 @@ public class ApplicationControllerAdvice {
 
     @ExceptionHandler(VehiculeException.class)
     public ResponseEntity<ErreurReponse> gestionVehiculeException(VehiculeException ex){
+        log.error("Erreur fonctionnelle : {}", ex.getMessage(), ex);
+        ErreurReponse er = new ErreurReponse(LocalDateTime.now(), "Erreur fonctionnelle", ex.getMessage());
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(er);
+    }
+
+    /**
+     * <p>La méthode <code>gestionLocationException</code> gère toutes les exceptions de type `LocationException`.</p>
+     *
+     * @param ex L'exception de type `LocationException` capturée.
+     * @return Une réponse HTTP contenant un statut HTTP BAD_REQUEST(400) et les détails de l'erreur.
+     */
+
+    @ExceptionHandler(LocationException.class)
+    public ResponseEntity<ErreurReponse> gestionLocationException(LocationException ex){
+        log.error("Erreur fonctionnelle : {}", ex.getMessage(), ex);
         ErreurReponse er = new ErreurReponse(LocalDateTime.now(), "Erreur fonctionnelle", ex.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(er);
     }
@@ -50,7 +69,8 @@ public class ApplicationControllerAdvice {
      */
     @ExceptionHandler(EntityNotFoundException.class)
     public ResponseEntity<ErreurReponse> entityNotFoundException(EntityNotFoundException ex){
-        ErreurReponse er = new ErreurReponse(LocalDateTime.now(), "Mauvaise Requete", ex.getMessage());
+        log.error("Mauvaise requête : {}", ex.getMessage(), ex);
+        ErreurReponse er = new ErreurReponse(LocalDateTime.now(), "Mauvaise requête", ex.getMessage());
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(er);
     }
 
@@ -62,6 +82,7 @@ public class ApplicationControllerAdvice {
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErreurReponse> problemeValidation(MethodArgumentNotValidException ex){
+        log.error("Validation erreur : {}", ex.getMessage(), ex);
         String message = ex.getBindingResult().getAllErrors()
                 .stream()
                 .map(DefaultMessageSourceResolvable::getDefaultMessage)
@@ -78,6 +99,7 @@ public class ApplicationControllerAdvice {
      */
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ErreurReponse> problemeDuplication(DataIntegrityViolationException ex){
+        log.error("Duplication problème : {}", ex.getMessage(), ex);
         String message = ex.getMessage();
         if (message.contains("duplicate key value violates unique constraint")) {
             message = "L'email est déjà utilisé, veuillez choisir un autre.";
@@ -88,8 +110,6 @@ public class ApplicationControllerAdvice {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(er);
     }
 
-//TODO : est-ce qu'il faut mettre toutes les erreurs possible dans cette classe ?
-//HttpMessageNotReadableException : quand l'utilisateur entre des champs qui n'existent pas dans le body
 
 }
 
