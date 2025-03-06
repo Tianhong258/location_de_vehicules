@@ -8,22 +8,22 @@ import java.time.LocalDate;
 import java.util.List;
 @Schema(description = "Détails de la demande de client")
 public record ClientRequestDto(
-        @Schema(description = "Nom du client", example = "Huang")
+        @Schema(description = "Nom du client", example = "Legrand")
         @NotBlank(message = "Le nom est obligatoire")
         @Size(min = 3, max = 20, message = "Le nom doit être entre 3 et 20 caractères")
         String nom,
 
-        @Schema(description = "Prénom du client", example = "Jaqen")
+        @Schema(description = "Prénom du client", example = "Jean-Jacques")
         @NotBlank(message = "Le prénom est obligatoire")
         @Size(min = 3, max = 20, message = "Le prénom doit être entre 3 et 20 caractères")
         String prenom,
 
-        @Schema(description = "Email du client", example = "jaqenClient@gmail.com")
+        @Schema(description = "Email du client", example = "JJClient@gmail.com")
         @NotNull(message = "L'email est obligatoire")
         @Email(message = "Le format de l'email est invalide")
         String email,
 
-        @Schema(description = "Mot de passe du client", example = "345Jaqen@")
+        @Schema(description = "Mot de passe du client", example = "345JJClient@")
         @NotBlank(message = "Le mot de passe est obligatoire")
         @Size(min = 8, max = 16, message = "Le mot de passe doit être entre 8 et 16 caractères")
         @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[&\\#@\\-_%§]).{6,}$",

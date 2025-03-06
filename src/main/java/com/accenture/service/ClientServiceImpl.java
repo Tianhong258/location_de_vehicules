@@ -2,7 +2,9 @@ package com.accenture.service;
 
 
 import com.accenture.exception.UtilisateurException;
+import com.accenture.model.Permis;
 import com.accenture.repository.ClientDao;
+import com.accenture.repository.LocationDao;
 import com.accenture.repository.entity.utilisateur.Adresse;
 import com.accenture.repository.entity.utilisateur.Client;
 import com.accenture.service.dto.utilisateur.ClientRequestDto;
@@ -26,12 +28,14 @@ public class ClientServiceImpl implements ClientService {
     private final ClientMapper clientMapper;
     private static final Pattern passwordPattern = Pattern.compile("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[&\\#@\\-_%§]).{6,}$");
     private final PasswordEncoder passwordEncoder;
+    private final LocationDao locationDao;
 
 
-    public ClientServiceImpl(ClientDao clientDao, ClientMapper clientMapper, PasswordEncoder passwordEncoder) {
+    public ClientServiceImpl(ClientDao clientDao, ClientMapper clientMapper, PasswordEncoder passwordEncoder, LocationDao locationDao) {
         this.clientDao = clientDao;
         this.clientMapper = clientMapper;
         this.passwordEncoder = passwordEncoder;
+        this.locationDao = locationDao;
     }
 
     /**
@@ -87,12 +91,11 @@ public class ClientServiceImpl implements ClientService {
     @Override
     public void desactiverOuSupprimer(Principal principal) throws UtilisateurException {
         Client client = clientDao.findByEmail(principal.getName()).orElseThrow();
-        clientDao.delete(client);
-        //trouver les locations, s'il y a pas
-        // l'utilisateur peut supprimer son compte : créer supprimer() et desactiver()
-//        client.setDesactive(true);
-//        clientDao.save(client);
-        //clientDao.deleteByEmail(clientResponseDto.email());
+        if (!locationDao.findByClient(client).isEmpty()) {
+            client.setDesactive(true);
+            clientDao.save(client);
+        }
+        else clientDao.delete(client);
     }
 
     /**
@@ -122,6 +125,7 @@ public class ClientServiceImpl implements ClientService {
         String clientPassword = client.getPassword();
         Adresse clientAdresse = client.getAdresse();
         LocalDate clientDateNaissance = client.getDateNaissance();
+        List<Permis> listePermis = client.getListePermis();
         if (clientNom != null) {
             if (clientNom.isBlank())
                 throw new UtilisateurException("le nom du client est absent");
@@ -133,9 +137,30 @@ public class ClientServiceImpl implements ClientService {
             clientAModifier.setPrenom(clientPrenom);
         }
         verifierEtRamplacerEmailPassword(clientAModifier, clientEmail, clientPassword);
-        if (clientAdresse != null) {
+        if (clientAdresse != null)
             verifierEtRemplacerAdresse(clientAModifier, clientAdresse);
+        if(listePermis !=  null){
+            gererPermisMoto(listePermis);
+            clientAModifier.setListePermis(listePermis);
         }
+        verifierEtRemplacerDateNaissance(clientAModifier, clientDateNaissance);
+    }
+
+    private static void verifierClientRequestDto(ClientRequestDto dto) throws UtilisateurException {
+        if (dto == null)
+            throw new UtilisateurException("le clientRequestDto est nulle");
+        if (dto.nom() == null || dto.nom().isBlank())
+            throw new UtilisateurException("le nom du client est absent");
+        if (dto.prenom() == null || dto.prenom().isBlank())
+            throw new UtilisateurException("le prénom du client est absent");
+        verifierEmailPassword(dto);
+        verifierAdresse(dto);
+        verifierDateNaissance(dto);
+        gererPermisMoto(dto.listePermis());
+
+    }
+
+    private static void verifierEtRemplacerDateNaissance(Client clientAModifier, LocalDate clientDateNaissance) {
         if (clientDateNaissance != null) {
             int nouvelleAnnee = clientDateNaissance.getYear() + 18;
             LocalDate nouvelleDate = LocalDate.of(nouvelleAnnee, clientDateNaissance.getMonth(), clientDateNaissance.getDayOfMonth());
@@ -143,7 +168,6 @@ public class ClientServiceImpl implements ClientService {
                 throw new UtilisateurException("pour rester s'inscrire sur notre site, il faut au moins 18 ans");
             clientAModifier.setDateNaissance(clientDateNaissance);
         }
-
     }
 
     private static void verifierEtRemplacerAdresse(Client clientAModifier, Adresse clientAdresse) throws UtilisateurException {
@@ -183,22 +207,13 @@ public class ClientServiceImpl implements ClientService {
         }
     }
 
-    private static void verifierClientRequestDto(ClientRequestDto dto) throws UtilisateurException {
-        if (dto == null)
-            throw new UtilisateurException("le clientRequestDto est nulle");
-        if (dto.nom() == null || dto.nom().isBlank())
-            throw new UtilisateurException("le nom du client est absent");
-        if (dto.prenom() == null || dto.prenom().isBlank())
-            throw new UtilisateurException("le prénom du client est absent");
-        verifierEmailPassword(dto);
-        verifierAdresse(dto);
+    private static void verifierDateNaissance(ClientRequestDto dto) {
         if (dto.dateNaissance() == null)
             throw new UtilisateurException("la date de naissance du client est absent");
         int nouvelleAnnee = dto.dateNaissance().getYear() + 18;
         LocalDate nouvelleDate = LocalDate.of(nouvelleAnnee, dto.dateNaissance().getMonth(), dto.dateNaissance().getDayOfMonth());
         if (nouvelleDate.isAfter(LocalDate.now()))
             throw new UtilisateurException("pour vous inscrire sur notre site, il faut au moins 18 ans");
-
     }
 
     private static void verifierEmailPassword(ClientRequestDto dto) throws UtilisateurException {
@@ -221,6 +236,18 @@ public class ClientServiceImpl implements ClientService {
             throw new UtilisateurException("le code postal du client est absent");
         if (dto.adresse().ville() == null || dto.adresse().ville().isBlank())
             throw new UtilisateurException("la ville du client est absent");
+    }
+
+    private static void gererPermisMoto(List<Permis> liste) {
+        if(liste.contains(Permis.A)){
+            if(!liste.contains(Permis.A1))
+                liste.add(Permis.A1);
+            if(!liste.contains(Permis.A2))
+                liste.add(Permis.A2);
+        }
+        if(liste.contains(Permis.A2) && !liste.contains(Permis.A1)) {
+            liste.add(Permis.A1);
+        }
     }
 
 

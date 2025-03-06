@@ -13,7 +13,7 @@ public interface MotoService {
     List<MotoResponseAdminDto> trouverToutes();
     MotoResponseAdminDto trouver(long id) throws EntityNotFoundException;
     List<MotoResponseAdminDto> filtrer(Filtre filtre);
-    void supprimer(long id) throws EntityNotFoundException;
+    void supprimerOuRetirer(long id) throws EntityNotFoundException;
     MotoResponseAdminDto modifier(long id, MotoRequestDto motoRequestDto) throws VehiculeException, EntityNotFoundException;
 }
 

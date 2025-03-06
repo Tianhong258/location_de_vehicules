@@ -50,28 +50,28 @@ class AdminServiceImplTest {
     @DisplayName("Test de la méthode ajouter(avec nom null) exception levée")
     @Test
     void testAjouterAvecNomNull(){
-        AdminRequestDto dto = new AdminRequestDto(null, "Tanya", "tanya@gmail.com","333Tanya@","Chien plus foufou à la maison");
+        AdminRequestDto dto = new AdminRequestDto(null, "Jean-Michel", "JMAdmin@gmail.com","333JMAdmin@","CEO");
         assertThrows(UtilisateurException.class, ()->service.ajouter(dto));
     }
 
     @DisplayName("Test de la méthode ajouter(avec nom blank) exception levée")
     @Test
     void testAjouterAvecNomBlank(){
-        AdminRequestDto dto = new AdminRequestDto("  \n   ", "Tanya", "tanya@gmail.com","333Tanya@","Chien plus foufou à la maison");
+        AdminRequestDto dto = new AdminRequestDto("  \n   ", "Jean-Michel", "JMAdmin@gmail.com","333JMAdmin@","CEO");
         assertThrows(UtilisateurException.class, ()->service.ajouter(dto));
     }
 
     @DisplayName("Test de la méthode ajouter(avec prenom null) exception levée")
     @Test
     void testAjouterAvecPrenomNull(){
-        AdminRequestDto dto = new AdminRequestDto("Huang", null, "tanya@gmail.com","333Tanya@","Chien plus foufou à la maison");
+        AdminRequestDto dto = new AdminRequestDto("Lepetit", null, "JMAdmin@gmail.com","333JMAdmin@","CEO");
         assertThrows(UtilisateurException.class, ()->service.ajouter(dto));
     }
 
     @DisplayName("Test de la méthode ajouter(avec prenom blank) exception levée")
     @Test
     void testAjouterAvecPrenomBlank(){
-        AdminRequestDto dto = new AdminRequestDto("Huang", " \n     ", "tanya@gmail.com","333Tanya@","Chien plus foufou à la maison");
+        AdminRequestDto dto = new AdminRequestDto("Lepetit", " \n     ", "JMAdmin@gmail.com","333JMAdmin@","CEO");
         assertThrows(UtilisateurException.class, ()->service.ajouter(dto));
     }
 
@@ -79,42 +79,79 @@ class AdminServiceImplTest {
     @DisplayName("Test de la méthode ajouter(avec mail null) exception levée")
     @Test
     void testAjouterAvecMailNull(){
-        AdminRequestDto dto = new AdminRequestDto("Huang", "Tanya",null,"333Tanya@","Chien plus foufou à la maison");
+        AdminRequestDto dto = new AdminRequestDto("Lepetit", "Jean-Michel",null,"333JMAdmin@","CEO");
         assertThrows(UtilisateurException.class, ()->service.ajouter(dto));
     }
 
     @DisplayName("Test de la méthode ajouter(avec mail blank) exception levée")
     @Test
     void testAjouterAvecMailBlank(){
-        AdminRequestDto dto = new AdminRequestDto("Huang", "Tanya", "   \n   ","333Tanya@","Chien plus foufou à la maison");
+        AdminRequestDto dto = new AdminRequestDto("Lepetit", "Jean-Michel", "   \n   ","333JMAdmin@","CEO");
         assertThrows(UtilisateurException.class, ()->service.ajouter(dto));
     }
+
+    @DisplayName("Test de la méthode ajouter(avec mail sans @) exception levée")
+    @Test
+    void testAjouterAvecMailMauvaisFormat(){
+        AdminRequestDto dto = new AdminRequestDto("Lepetit", "Jean-Michel","sdnfsuf","333Jean-Michel@","CEO");
+        assertThrows(UtilisateurException.class, ()->service.ajouter(dto));
+    }
+
 
     @DisplayName("Test de la méthode ajouter(avec password null) exception levée")
     @Test
     void testAjouterAvecPasswordNull(){
-        AdminRequestDto dto = new AdminRequestDto("Huang", "Tanya", "tanya@gmail.com",null,"Chien plus foufou à la maison");
+        AdminRequestDto dto = new AdminRequestDto("Lepetit", "Jean-Michel", "JMAdmin@gmail.com",null,"CEO");
         assertThrows(UtilisateurException.class, ()->service.ajouter(dto));
     }
 
     @DisplayName("Test de la méthode ajouter(avec password blank) exception levée")
     @Test
     void testAjouterAvecPasswordBlank(){
-        AdminRequestDto dto = new AdminRequestDto("Huang", "Tanya", "tanya@gmail.com","  ","Chien plus foufou à la maison");
+        AdminRequestDto dto = new AdminRequestDto("Lepetit", "Jean-Michel", "JMAdmin@gmail.com","  ","CEO");
         assertThrows(UtilisateurException.class, ()->service.ajouter(dto));
     }
+
+    @DisplayName("Test de la méthode ajouter(avec password sans symbole) exception levée")
+    @Test
+    void testAjouterAvecPasswordSansSymbole(){
+        AdminRequestDto dto = new AdminRequestDto("Lepetit", "Jean-Michel", "JMAdmin@gmail.com","342Tdnzo","CEO");
+        assertThrows(UtilisateurException.class, ()->service.ajouter(dto));
+    }
+
+    @DisplayName("Test de la méthode ajouter(avec password sans chiffre) exception levée")
+    @Test
+    void testAjouterAvecPasswordSansChiffre(){
+        AdminRequestDto dto = new AdminRequestDto("Lepetit", "Jean-Michel", "JMAdmin@gmail.com","Tdnzo@cj","CEO");
+        assertThrows(UtilisateurException.class, ()->service.ajouter(dto));
+    }
+    @DisplayName("Test de la méthode ajouter(avec password sans lettre minuscule) exception levée")
+    @Test
+    void testAjouterAvecPasswordSansMinuscule(){
+        AdminRequestDto dto = new AdminRequestDto("Lepetit", "Jean-Michel", "JMAdmin@gmail.com","342SGRR@","CEO");
+        assertThrows(UtilisateurException.class, ()->service.ajouter(dto));
+    }
+
+    @DisplayName("Test de la méthode ajouter(avec password sans lettre majuscule) exception levée")
+    @Test
+    void testAjouterAvecPasswordSansMajuscule(){
+        AdminRequestDto dto = new AdminRequestDto("Lepetit", "Jean-Michel", "JMAdmin@gmail.com","342sfeijdnzo@","CEO");
+        assertThrows(UtilisateurException.class, ()->service.ajouter(dto));
+    }
+
+
 
     @DisplayName("Test de la méthode ajouter(avec fonction null) exception levée")
     @Test
     void testAjouterAvecFonctionNull(){
-        AdminRequestDto dto = new AdminRequestDto("Huang", "Tanya", "tanya@gmail.com","333Tanya@",null);
+        AdminRequestDto dto = new AdminRequestDto("Lepetit", "Jean-Michel", "JMAdmin@gmail.com","333JMAdmin@",null);
         assertThrows(UtilisateurException.class, ()->service.ajouter(dto));
     }
 
     @DisplayName("Test de la méthode ajouter(avec fonction blank) exception levée")
     @Test
     void testAjouterAvecFonctionBlank(){
-        AdminRequestDto dto = new AdminRequestDto("Huang", "Tanya", "tanya@gmail.com","333Tanya@","     ");
+        AdminRequestDto dto = new AdminRequestDto("Lepetit", "Jean-Michel", "JMAdmin@gmail.com","333JMAdmin@","     ");
         assertThrows(UtilisateurException.class, ()->service.ajouter(dto));
     }
 
@@ -127,7 +164,7 @@ class AdminServiceImplTest {
     void testAjouterOk() {
         Admin adminAvantEnreg = creerAdmin();
         adminAvantEnreg.setId(0);
-        AdminRequestDto adminRequestDto = new AdminRequestDto("Huang", "Tanya", "tanya@gmail.com","333Tanya@","Chien plus foufou à la maison");
+        AdminRequestDto adminRequestDto = new AdminRequestDto("Lepetit", "Jean-Michel", "JMAdmin@gmail.com","333JMAdmin@","CEO");
         Admin adminApresEnreg = creerAdmin();
         AdminResponseDto adminResponseDto = creerAdminResponseDto();
         Mockito.when(mapperMock.toAdmin(adminRequestDto)).thenReturn(adminAvantEnreg);
@@ -141,10 +178,10 @@ class AdminServiceImplTest {
     @DisplayName("Test de la méthode trouver(ok) qui doit renvoyer un AdminResponseDto")
     @Test
     void testTrouverOk() {
-        Mockito.when(principalMock.getName()).thenReturn("tanya@gmail.com");
+        Mockito.when(principalMock.getName()).thenReturn("JMAdmin@gmail.com");
         Admin a = creerAdmin();
         Optional<Admin> optAdmin = Optional.of(a);
-        Mockito.when(daoMock.findByEmail("tanya@gmail.com")).thenReturn(optAdmin);
+        Mockito.when(daoMock.findByEmail("JMAdmin@gmail.com")).thenReturn(optAdmin);
         AdminResponseDto adminResponseDto = creerAdminResponseDto();
         Mockito.when(mapperMock.toAdminResponseDto(a)).thenReturn(adminResponseDto);
         assertSame(adminResponseDto, service.trouver(principalMock));
@@ -185,22 +222,21 @@ class AdminServiceImplTest {
     void testSupprimerAvecDernierAdmin(){
         Admin a = creerAdmin();
         Optional<Admin> optAdmin = Optional.of(a);
-        Mockito.when(principalMock.getName()).thenReturn(("tanya@gmail.com"));
-        Mockito.when(daoMock.findByEmail("tanya@gmail.com")).thenReturn(optAdmin);
+        Mockito.when(principalMock.getName()).thenReturn(("JMAdmin@gmail.com"));
+        Mockito.when(daoMock.findByEmail("JMAdmin@gmail.com")).thenReturn(optAdmin);
         UtilisateurException ex = assertThrows(UtilisateurException.class, ()->service.supprimer(principalMock));
         assertEquals("Interdit de supprimer le compte du dernier administrateur ! ", ex.getMessage());
     }
 
     @DisplayName("""
-            Test la méthode supprimer(ok), delete() est appelé
-            """)
+            Test la méthode supprimer(ok), delete() est appelé """)
     @Test
     void testSupprimerOk(){
         Admin a = creerAdmin();
         Optional<Admin> optAdmin = Optional.of(a);
-        Mockito.when(daoMock.findByEmail("tanya@gmail.com")).thenReturn(optAdmin);
+        Mockito.when(daoMock.findByEmail("JMAdmin@gmail.com")).thenReturn(optAdmin);
         Mockito.when(daoMock.count()).thenReturn(Long.valueOf(2));
-        Mockito.when(principalMock.getName()).thenReturn(("tanya@gmail.com"));
+        Mockito.when(principalMock.getName()).thenReturn(("JMAdmin@gmail.com"));
         service.supprimer(principalMock);
         Mockito.verify(daoMock).delete(optAdmin.get());
     }
@@ -213,18 +249,18 @@ class AdminServiceImplTest {
         Admin admin = new Admin();
         admin.setId(1);
         admin.setNom(" \n");
-        admin.setPrenom("Tanya");
-        admin.setPassword("333Tanya@");
-        admin.setEmail("tanya@gmail.com");
-        admin.setFonction("Chien le plus foufou à la maison");
-        AdminRequestDto adminRequestDto = new AdminRequestDto(" \n", "Tanya","tanya@gmail.com","333Tanya@","Chien le plus foufou à la maison");
-        Mockito.when(daoMock.findByEmail("tanya@gmail.com")).thenReturn(Optional.of(creerAdmin()));
+        admin.setPrenom("Jean-Michel");
+        admin.setPassword("333JMAdmin@");
+        admin.setEmail("JMAdmin@gmail.com");
+        admin.setFonction("CEO");
+        AdminRequestDto adminRequestDto = new AdminRequestDto(" \n", "Jean-Michel","JMAdmin@gmail.com","333JMAdmin@","CEO");
+        Mockito.when(daoMock.findByEmail("JMAdmin@gmail.com")).thenReturn(Optional.of(creerAdmin()));
         Mockito.when(mapperMock.toAdmin(adminRequestDto)).thenReturn(admin);
-        Mockito.when(principalMock.getName()).thenReturn(("tanya@gmail.com"));
+        Mockito.when(principalMock.getName()).thenReturn(("JMAdmin@gmail.com"));
         assertThrows(UtilisateurException.class, ()->service.modifierPartiellement(principalMock,adminRequestDto));
     }
 
-    //TODO : les tests remplacer à finir
+    //TODO : ici ce sont les autres tests de remplacer
 
 
     @DisplayName("""
@@ -234,18 +270,18 @@ class AdminServiceImplTest {
     void testModifierPartiellementOk(){
         Admin a = creerAdmin();
         Optional<Admin> optAdmin = Optional.of(a);
-        AdminRequestDto adminRequestDto = new AdminRequestDto(null, "Tanya", "tanya@gmail.com",null,"Chien le plus cool à la maison");
+        AdminRequestDto adminRequestDto = new AdminRequestDto(null, "Jean-Michel", "JMAdmin@gmail.com",null,"CEO");
         Admin nouveau = new Admin();
         nouveau.setId(1);
-        nouveau.setPrenom("Tanya");
-        nouveau.setEmail("tanya@gmail.com");
-        nouveau.setFonction("Chien le plus cool à la maison");
-        AdminResponseDto adminResponseDto = new AdminResponseDto(1,"Huang", "Tanya", "tanya@gmail.com","Chien le plus cool à la maison" );
-        Mockito.when(daoMock.findByEmail("tanya@gmail.com")).thenReturn(optAdmin);
+        nouveau.setPrenom("Jean-Michel");
+        nouveau.setEmail("JMAdmin@gmail.com");
+        nouveau.setFonction("CEO");
+        AdminResponseDto adminResponseDto = new AdminResponseDto(1,"Lepetit", "Jean-Michel", "JMAdmin@gmail.com","CEO" );
+        Mockito.when(daoMock.findByEmail("JMAdmin@gmail.com")).thenReturn(optAdmin);
         Mockito.when(mapperMock.toAdmin(adminRequestDto)).thenReturn(nouveau);
         Mockito.when(mapperMock.toAdminResponseDto(nouveau)).thenReturn(adminResponseDto);
         Mockito.when(daoMock.save(optAdmin.get())).thenReturn(nouveau);
-        Mockito.when(principalMock.getName()).thenReturn(("tanya@gmail.com"));
+        Mockito.when(principalMock.getName()).thenReturn(("JMAdmin@gmail.com"));
         assertEquals(adminResponseDto,service.modifierPartiellement(principalMock,adminRequestDto));
         Mockito.verify(daoMock).save(optAdmin.get());
     }
@@ -253,34 +289,34 @@ class AdminServiceImplTest {
     private static Admin creerAdmin(){
         Admin admin = new Admin();
         admin.setId(1);
-        admin.setNom("Huang");
-        admin.setPrenom("Tanya");
-        admin.setPassword("333Tanya@");
-        admin.setEmail("tanya@gmail.com");
-        admin.setFonction("Chien le plus foufou à la maison");
+        admin.setNom("Lepetit");
+        admin.setPrenom("Jean-Michel");
+        admin.setPassword("333JMAdmin@");
+        admin.setEmail("JMAdmin@gmail.com");
+        admin.setFonction("CEO");
         return admin;
     }
     private static Admin creerAdmin2(){
         Admin admin = new Admin();
         admin.setId(2);
-        admin.setNom("Huang");
-        admin.setPrenom("Jaqen");
-        admin.setPassword("333Jaqen@");
-        admin.setEmail("jaqen@gmail.com");
-        admin.setFonction("Chien le plus sage à la maison");
+        admin.setNom("Lepetit");
+        admin.setPrenom("Jean-François");
+        admin.setPassword("333JFAdmin@");
+        admin.setEmail("JFAdmin@gmail.com");
+        admin.setFonction("Manager");
         return admin;
     }
 
 
 
     private static AdminResponseDto creerAdminResponseDto() {
-        AdminResponseDto adminResponseDto = new AdminResponseDto(1,"Huang", "Tanya", "tanya@gmail.com","Chien le plus foufou à la maison" );
-        return adminResponseDto;
+       return new AdminResponseDto(1,"Lepetit", "Jean-Michel", "JMAdmin@gmail.com","CEO" );
+
     }
 
     private static AdminResponseDto creerAdminResponseDto2() {
-        AdminResponseDto adminResponseDto = new AdminResponseDto(2,"Huang", "Jaqen", "jaqen@gmail.com","Chien le plus sage à la maison" );
-        return adminResponseDto;
+        return new AdminResponseDto(2,"LePetit", "Jean-François", "JFAdmin@gmail.com","Manager" );
+
     }
 
 

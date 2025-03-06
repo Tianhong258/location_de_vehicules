@@ -1,5 +1,8 @@
 package com.accenture.configuration;
 
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Contact;
+import io.swagger.v3.oas.models.info.Info;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -30,8 +33,10 @@ public class SecurityConfiguration {
                                     "/swagger-ui/**",
                                     "/swagger-ui/html"
                             ).permitAll()
-                            .requestMatchers(HttpMethod.GET, "/vehicules/recherche").permitAll()
+                            .requestMatchers(HttpMethod.GET, "/vehicules/rechercher").permitAll()
                             .requestMatchers(HttpMethod.POST, "/clients","/admins").permitAll()
+
+
                             .requestMatchers(HttpMethod.GET, "/clients/infos").hasAnyRole("ADMIN","CLIENT")
                             .requestMatchers(HttpMethod.PATCH, "/clients").hasAnyRole("ADMIN","CLIENT")
                             .requestMatchers(HttpMethod.DELETE, "/clients").hasAnyRole("ADMIN","CLIENT")
@@ -63,5 +68,18 @@ public class SecurityConfiguration {
         jdbcUserDetailsManager.setUsersByUsernameQuery("select email, password, 1 from utilisateur where email = ?");//1 est l'utilisateur valid==true : il a le droit d'utiliser le site
         jdbcUserDetailsManager.setAuthoritiesByUsernameQuery("select email, role from utilisateur where email = ?");
         return jdbcUserDetailsManager;
+    }
+
+    @Bean
+    public OpenAPI apiConfiguration() {
+        return new OpenAPI()
+                .info(new Info()
+                        .title("Location de Véhicule")
+                        .description("Api pour l'application Location de Véhicule")
+                        .version("0.0.1")
+                        .contact(new Contact()
+                                .name("Tianhong Huang").
+                                email("tianhong.huang@accenture.com"))
+                );
     }
 }

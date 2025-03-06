@@ -13,6 +13,6 @@ public interface VoitureService {
     List<VoitureResponseAdminDto> trouverToutes();
     VoitureResponseAdminDto trouver(long id) throws EntityNotFoundException;
     List<VoitureResponseAdminDto> filtrer(Filtre filtre);
-    void supprimer(long id) throws EntityNotFoundException;
+    void supprimerOuRetire(long id) throws EntityNotFoundException;
     VoitureResponseAdminDto modifier(long id, VoitureRequestDto voitureRequestDto) throws VehiculeException, EntityNotFoundException;
 }

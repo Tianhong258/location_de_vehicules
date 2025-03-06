@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 
 @Schema(description = "Détails de la demande d'adresse")
 public record AdresseDto(
-        @Schema(description = "Rue de l'adresse du client", example = "Jardin")
+        @Schema(description = "Rue de l'adresse du client", example = "33 Rue Victor Hugo")
         @NotBlank(message = "La rue est obligatoire")
         String rue,
 

@@ -7,18 +7,17 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 
-
 @Schema(description = "Détails de la demande de moto")
 public record MotoRequestDto(
-        @Schema(description = "Marque de la moto", example = "Wong Wong")
+        @Schema(description = "Marque de la moto", example = "Rider")
         @NotBlank(message = "La marque est obligatoire")
         String marque,
 
-        @Schema(description = "Modèle de la moto", example = "Modèle parfait pour aller à la plage")
+        @Schema(description = "Modèle de la moto", example = "SR8")
         @NotBlank(message = "Le modèle est obligatoire")
         String modele,
 
-        @Schema(description = "Couleur de la moto", example = "Bleu comme la mer")
+        @Schema(description = "Couleur de la moto", example = "Noir Classique")
         @NotBlank(message = "La couleur est obligatoire")
         String couleur,
 
@@ -53,7 +52,7 @@ public record MotoRequestDto(
 
         @Schema(description = "Type de la moto", example = "SPORTIVE")
         @NotNull(message = "Le type est obligatoire")
-        TypeMoto type,
+        TypeMoto typeMoto,
 
         @Schema(description = "Tarif par jour de la moto", example = "68.3")
         @NotNull(message = "Le tarif est obligatoire")

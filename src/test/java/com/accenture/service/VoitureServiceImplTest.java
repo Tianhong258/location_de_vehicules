@@ -3,14 +3,16 @@ package com.accenture.service;
 
 import com.accenture.exception.VehiculeException;
 import com.accenture.model.*;
+import com.accenture.repository.LocationDao;
 import com.accenture.repository.VoitureDao;
 
+import com.accenture.repository.entity.location.Location;
 import com.accenture.repository.entity.vehicule.Voiture;
 
 import com.accenture.service.dto.vehicule.VoitureRequestDto;
 import com.accenture.service.dto.vehicule.VoitureResponseAdminDto;
 import com.accenture.service.mapper.vehicule.VoitureMapper;
-import jakarta.persistence.EntityNotFoundException;
+import jakarta.persistence.*;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -18,7 +20,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +35,12 @@ class VoitureServiceImplTest {
     @Mock
     VoitureMapper mapperMock;
 
+    @Mock
+    LocationDao daoLocationMock;
+
+    @Mock
+    Location locationMock;
+
     @InjectMocks
     VoitureServiceImpl service;
 
@@ -47,146 +54,146 @@ class VoitureServiceImplTest {
     @DisplayName("Test de la méthode ajouter(avec marque null) exception levée")
     @Test
     void testAjouterAvecMarqueNull() {
-        VoitureRequestDto dto = new VoitureRequestDto(null, "Parfait pour aller à la plage", "bleu comme la mer", 4, TypeCarburant.ESSENCE, NombrePortesVoiture.TROIS, Transmission.MANUELLE,true, 2, TypeVoiture.FAMILIALE,100.0, 3000,true, false);
+        VoitureRequestDto dto = new VoitureRequestDto(null, "4", "Jaune", 4, TypeCarburant.ESSENCE, NombrePortesVoiture.TROIS, Transmission.MANUELLE,true, 2, TypeVoiture.FAMILIALE,100.0, 3000,true, false);
         assertThrows(VehiculeException.class, () -> service.ajouter(dto));
     }
 
     @DisplayName("Test de la méthode ajouter(avec marque blank) exception levée")
     @Test
     void testAjouterAvecMarqueBlank() {
-        VoitureRequestDto dto = new VoitureRequestDto("      \n ", "Parfait pour aller à la plage", "bleu comme la mer", 4, TypeCarburant.ESSENCE, NombrePortesVoiture.TROIS, Transmission.MANUELLE,true, 2, TypeVoiture.FAMILIALE,100.0, 3000,true, false);
+        VoitureRequestDto dto = new VoitureRequestDto("      \n ", "4", "Jaune", 4, TypeCarburant.ESSENCE, NombrePortesVoiture.TROIS, Transmission.MANUELLE,true, 2, TypeVoiture.FAMILIALE,100.0, 3000,true, false);
         assertThrows(VehiculeException.class, () -> service.ajouter(dto));
     }
     @DisplayName("Test de la méthode ajouter(avec modele null) exception levée")
     @Test
     void testAjouterAvecModeleNull() {
-        VoitureRequestDto dto = new VoitureRequestDto("Wongwong Chien", null, "bleu comme la mer", 4, TypeCarburant.ESSENCE, NombrePortesVoiture.TROIS, Transmission.MANUELLE,true, 2, TypeVoiture.FAMILIALE,100.0, 3000,true, false);
+        VoitureRequestDto dto = new VoitureRequestDto("Renault Twingo", null, "Jaune", 4, TypeCarburant.ESSENCE, NombrePortesVoiture.TROIS, Transmission.MANUELLE,true, 2, TypeVoiture.FAMILIALE,100.0, 3000,true, false);
         assertThrows(VehiculeException.class, () -> service.ajouter(dto));
     }
 
     @DisplayName("Test de la méthode ajouter(avec modele blank) exception levée")
     @Test
     void testAjouterAvecModeleBlank() {
-        VoitureRequestDto dto = new VoitureRequestDto("Wongwong Chien", "      \n ", "bleu comme la mer", 4, TypeCarburant.ESSENCE, NombrePortesVoiture.TROIS, Transmission.MANUELLE,true, 2, TypeVoiture.FAMILIALE,100.0, 3000,true, false);
+        VoitureRequestDto dto = new VoitureRequestDto("Renault Twingo", "      \n ", "Jaune", 4, TypeCarburant.ESSENCE, NombrePortesVoiture.TROIS, Transmission.MANUELLE,true, 2, TypeVoiture.FAMILIALE,100.0, 3000,true, false);
         assertThrows(VehiculeException.class, () -> service.ajouter(dto));
     }
     @DisplayName("Test de la méthode ajouter(avec couleur null) exception levée")
     @Test
     void testAjouterAvecCouleurNull() {
-        VoitureRequestDto dto = new VoitureRequestDto("Wongwong Chien","Parfait pour aller à la plage" , null, 4, TypeCarburant.ESSENCE, NombrePortesVoiture.TROIS, Transmission.MANUELLE,true, 2, TypeVoiture.FAMILIALE,100.0, 3000,true, false);
+        VoitureRequestDto dto = new VoitureRequestDto("Renault Twingo","4" , null, 4, TypeCarburant.ESSENCE, NombrePortesVoiture.TROIS, Transmission.MANUELLE,true, 2, TypeVoiture.FAMILIALE,100.0, 3000,true, false);
         assertThrows(VehiculeException.class, () -> service.ajouter(dto));
     }
 
     @DisplayName("Test de la méthode ajouter(avec couleur blank) exception levée")
     @Test
     void testAjouterAvecCouleurBlank() {
-        VoitureRequestDto dto = new VoitureRequestDto("Wongwong Chien", "Parfait pour aller à la plage", "    \n   ", 4, TypeCarburant.ESSENCE, NombrePortesVoiture.TROIS, Transmission.MANUELLE,true, 2, TypeVoiture.FAMILIALE,100.0, 3000,true, false);
+        VoitureRequestDto dto = new VoitureRequestDto("Renault Twingo", "4", "    \n   ", 4, TypeCarburant.ESSENCE, NombrePortesVoiture.TROIS, Transmission.MANUELLE,true, 2, TypeVoiture.FAMILIALE,100.0, 3000,true, false);
         assertThrows(VehiculeException.class, () -> service.ajouter(dto));
     }
     @DisplayName("Test de la méthode ajouter(avec nombrePlaces null) exception levée")
     @Test
     void testAjouterAvecNombrePlacesNull() {
-        VoitureRequestDto dto = new VoitureRequestDto("Wongwong Chien","Parfait pour aller à la plage" , "bleu comme la mer", null, TypeCarburant.ESSENCE, NombrePortesVoiture.TROIS, Transmission.MANUELLE,true, 2, TypeVoiture.FAMILIALE,100.0, 3000,true, false);
+        VoitureRequestDto dto = new VoitureRequestDto("Renault Twingo","4" , "Jaune", null, TypeCarburant.ESSENCE, NombrePortesVoiture.TROIS, Transmission.MANUELLE,true, 2, TypeVoiture.FAMILIALE,100.0, 3000,true, false);
         assertThrows(VehiculeException.class, () -> service.ajouter(dto));
     }
 
     @DisplayName("Test de la méthode ajouter(avec nombrePlaces négatif) exception levée")
     @Test
     void testAjouterAvecNombrePlacesNegatif() {
-        VoitureRequestDto dto = new VoitureRequestDto("Wongwong Chien", "Parfait pour aller à la plage", "bleu comme la mer", -3, TypeCarburant.ESSENCE, NombrePortesVoiture.TROIS, Transmission.MANUELLE,true, 2, TypeVoiture.FAMILIALE,100.0, 3000,true, false);
+        VoitureRequestDto dto = new VoitureRequestDto("Renault Twingo", "4", "Jaune", -3, TypeCarburant.ESSENCE, NombrePortesVoiture.TROIS, Transmission.MANUELLE,true, 2, TypeVoiture.FAMILIALE,100.0, 3000,true, false);
         assertThrows(VehiculeException.class, () -> service.ajouter(dto));
     }
 
     @DisplayName("Test de la méthode ajouter(avec nombrePortes null) exception levée")
     @Test
     void testAjouterAvecNombrePortesNull() {
-        VoitureRequestDto dto = new VoitureRequestDto("Wongwong Chien","Parfait pour aller à la plage" , "bleu comme la mer", 4, TypeCarburant.ESSENCE, null, Transmission.MANUELLE,true, 2, TypeVoiture.FAMILIALE,100.0, 3000,true, false);
+        VoitureRequestDto dto = new VoitureRequestDto("Renault Twingo","4" , "Jaune", 4, TypeCarburant.ESSENCE, null, Transmission.MANUELLE,true, 2, TypeVoiture.FAMILIALE,100.0, 3000,true, false);
         assertThrows(VehiculeException.class, () -> service.ajouter(dto));
     }
 
     @DisplayName("Test de la méthode ajouter(avec typeCarburant null) exception levée")
     @Test
     void testAjouterAvecTypeCarburantNull() {
-        VoitureRequestDto dto = new VoitureRequestDto("Wongwong Chien","Parfait pour aller à la plage" , "bleu comme la mer", 4, null, NombrePortesVoiture.TROIS, Transmission.MANUELLE,true, 2, TypeVoiture.FAMILIALE,100.0, 3000,true, false);
+        VoitureRequestDto dto = new VoitureRequestDto("Renault Twingo","4" , "Jaune", 4, null, NombrePortesVoiture.TROIS, Transmission.MANUELLE,true, 2, TypeVoiture.FAMILIALE,100.0, 3000,true, false);
         assertThrows(VehiculeException.class, () -> service.ajouter(dto));
     }
 
     @DisplayName("Test de la méthode ajouter(avec transmission null) exception levée")
     @Test
     void testAjouterAvecTransmissionNull() {
-        VoitureRequestDto dto = new VoitureRequestDto("Wongwong Chien","Parfait pour aller à la plage" , "bleu comme la mer", 4, TypeCarburant.ESSENCE, NombrePortesVoiture.TROIS, null,true, 2, TypeVoiture.FAMILIALE,100.0, 3000,true, false);
+        VoitureRequestDto dto = new VoitureRequestDto("Renault Twingo","4" , "Jaune", 4, TypeCarburant.ESSENCE, NombrePortesVoiture.TROIS, null,true, 2, TypeVoiture.FAMILIALE,100.0, 3000,true, false);
         assertThrows(VehiculeException.class, () -> service.ajouter(dto));
     }
     @DisplayName("Test de la méthode ajouter(avec climatisation null) exception levée")
     @Test
     void testAjouterAvecClimatisationNull() {
-        VoitureRequestDto dto = new VoitureRequestDto("Wongwong Chien","Parfait pour aller à la plage" , "bleu comme la mer", 4, TypeCarburant.ESSENCE, NombrePortesVoiture.TROIS, Transmission.MANUELLE,null, 2, TypeVoiture.FAMILIALE,100.0, 3000,true, false);
+        VoitureRequestDto dto = new VoitureRequestDto("Renault Twingo","4" , "Jaune", 4, TypeCarburant.ESSENCE, NombrePortesVoiture.TROIS, Transmission.MANUELLE,null, 2, TypeVoiture.FAMILIALE,100.0, 3000,true, false);
         assertThrows(VehiculeException.class, () -> service.ajouter(dto));
     }
     @DisplayName("Test de la méthode ajouter(avec nombreBagages null) exception levée")
     @Test
     void testAjouterAvecNombreBagagesNull() {
-        VoitureRequestDto dto = new VoitureRequestDto("Wongwong Chien","Parfait pour aller à la plage" , "bleu comme la mer", 4, TypeCarburant.ESSENCE, NombrePortesVoiture.TROIS, Transmission.MANUELLE,true, null, TypeVoiture.FAMILIALE,100.0, 3000,true, false);
+        VoitureRequestDto dto = new VoitureRequestDto("Renault Twingo","4" , "Jaune", 4, TypeCarburant.ESSENCE, NombrePortesVoiture.TROIS, Transmission.MANUELLE,true, null, TypeVoiture.FAMILIALE,100.0, 3000,true, false);
         assertThrows(VehiculeException.class, () -> service.ajouter(dto));
     }
 
     @DisplayName("Test de la méthode ajouter(avec nombreBagages négatif) exception levée")
     @Test
     void testAjouterAvecNombreBagagesNegatif() {
-        VoitureRequestDto dto = new VoitureRequestDto("Wongwong Chien", "Parfait pour aller à la plage", "bleu comme la mer", 4, TypeCarburant.ESSENCE, NombrePortesVoiture.TROIS, Transmission.MANUELLE,true, -2, TypeVoiture.FAMILIALE,100.0, 3000,true, false);
+        VoitureRequestDto dto = new VoitureRequestDto("Renault Twingo", "4", "Jaune", 4, TypeCarburant.ESSENCE, NombrePortesVoiture.TROIS, Transmission.MANUELLE,true, -2, TypeVoiture.FAMILIALE,100.0, 3000,true, false);
         assertThrows(VehiculeException.class, () -> service.ajouter(dto));
     }
     @DisplayName("Test de la méthode ajouter(avec type null) exception levée")
     @Test
     void testAjouterAvecTypeNull() {
-        VoitureRequestDto dto = new VoitureRequestDto("Wongwong Chien","Parfait pour aller à la plage" , "bleu comme la mer", 4, TypeCarburant.ESSENCE, NombrePortesVoiture.TROIS, Transmission.MANUELLE,true, 2, null,100.0, 3000,true, false);
+        VoitureRequestDto dto = new VoitureRequestDto("Renault Twingo","4" , "Jaune", 4, TypeCarburant.ESSENCE, NombrePortesVoiture.TROIS, Transmission.MANUELLE,true, 2, null,100.0, 3000,true, false);
         assertThrows(VehiculeException.class, () -> service.ajouter(dto));
     }
 
     @DisplayName("Test de la méthode ajouter(avec tarif null) exception levée")
     @Test
     void testAjouterAvecTarifNull() {
-        VoitureRequestDto dto = new VoitureRequestDto("Wongwong Chien","Parfait pour aller à la plage" , "bleu comme la mer", 4, TypeCarburant.ESSENCE, NombrePortesVoiture.TROIS, Transmission.MANUELLE,true, 2, TypeVoiture.FAMILIALE,null, 3000,true, false);
+        VoitureRequestDto dto = new VoitureRequestDto("Renault Twingo","4" , "Jaune", 4, TypeCarburant.ESSENCE, NombrePortesVoiture.TROIS, Transmission.MANUELLE,true, 2, TypeVoiture.FAMILIALE,null, 3000,true, false);
         assertThrows(VehiculeException.class, () -> service.ajouter(dto));
     }
 
     @DisplayName("Test de la méthode ajouter(avec tarif négatif) exception levée")
     @Test
     void testAjouterAvecTarifNegatif() {
-        VoitureRequestDto dto = new VoitureRequestDto("Wongwong Chien", "Parfait pour aller à la plage", "bleu comme la mer", 4, TypeCarburant.ESSENCE, NombrePortesVoiture.TROIS, Transmission.MANUELLE,true, 2, TypeVoiture.FAMILIALE,-100.0, 3000,true, false);
+        VoitureRequestDto dto = new VoitureRequestDto("Renault Twingo", "4", "Jaune", 4, TypeCarburant.ESSENCE, NombrePortesVoiture.TROIS, Transmission.MANUELLE,true, 2, TypeVoiture.FAMILIALE,-100.0, 3000,true, false);
         assertThrows(VehiculeException.class, () -> service.ajouter(dto));
     }
     @DisplayName("Test de la méthode ajouter(avec kilometrage null) exception levée")
     @Test
     void testAjouterAvecKilometrageNull() {
-        VoitureRequestDto dto = new VoitureRequestDto("Wongwong Chien","Parfait pour aller à la plage" , "bleu comme la mer", 4, TypeCarburant.ESSENCE, NombrePortesVoiture.TROIS, Transmission.MANUELLE,true, 2, TypeVoiture.FAMILIALE,100.0, null,true, false);
+        VoitureRequestDto dto = new VoitureRequestDto("Renault Twingo","4" , "Jaune", 4, TypeCarburant.ESSENCE, NombrePortesVoiture.TROIS, Transmission.MANUELLE,true, 2, TypeVoiture.FAMILIALE,100.0, null,true, false);
         assertThrows(VehiculeException.class, () -> service.ajouter(dto));
     }
 
     @DisplayName("Test de la méthode ajouter(avec kilometrage négatif) exception levée")
     @Test
     void testAjouterAvecKilometrageNegatif() {
-        VoitureRequestDto dto = new VoitureRequestDto("Wongwong Chien", "Parfait pour aller à la plage", "bleu comme la mer", 4, TypeCarburant.ESSENCE, NombrePortesVoiture.TROIS, Transmission.MANUELLE,true, 2, TypeVoiture.FAMILIALE,100.0, -3000,true, false);
+        VoitureRequestDto dto = new VoitureRequestDto("Renault Twingo", "4", "Jaune", 4, TypeCarburant.ESSENCE, NombrePortesVoiture.TROIS, Transmission.MANUELLE,true, 2, TypeVoiture.FAMILIALE,100.0, -3000,true, false);
         assertThrows(VehiculeException.class, () -> service.ajouter(dto));
     }
 
     @DisplayName("Test de la méthode ajouter(avec actif null) exception levée")
     @Test
     void testAjouterAvecActifNull() {
-        VoitureRequestDto dto = new VoitureRequestDto("Wongwong Chien","Parfait pour aller à la plage" , "bleu comme la mer", 4, TypeCarburant.ESSENCE, NombrePortesVoiture.TROIS, Transmission.MANUELLE,true, 2, TypeVoiture.FAMILIALE,100.0, 3000,null, false);
+        VoitureRequestDto dto = new VoitureRequestDto("Renault Twingo","4" , "Jaune", 4, TypeCarburant.ESSENCE, NombrePortesVoiture.TROIS, Transmission.MANUELLE,true, 2, TypeVoiture.FAMILIALE,100.0, 3000,null, false);
         assertThrows(VehiculeException.class, () -> service.ajouter(dto));
     }
     @DisplayName("Test de la méthode ajouter(avec retire null) exception levée")
     @Test
     void testAjouterAvecRetireNull() {
-        VoitureRequestDto dto = new VoitureRequestDto("Wongwong Chien","Parfait pour aller à la plage" , "bleu comme la mer", 4, TypeCarburant.ESSENCE, NombrePortesVoiture.TROIS, Transmission.MANUELLE,true, 2, TypeVoiture.FAMILIALE,100.0, 3000,true, null);
+        VoitureRequestDto dto = new VoitureRequestDto("Renault Twingo","4" , "Jaune", 4, TypeCarburant.ESSENCE, NombrePortesVoiture.TROIS, Transmission.MANUELLE,true, 2, TypeVoiture.FAMILIALE,100.0, 3000,true, null);
         assertThrows(VehiculeException.class, () -> service.ajouter(dto));
     }
 
     @DisplayName("Test de la méthode ajouter(avec actif true, retire true) exception levée")
     @Test
     void testAjouterAvecActifTrueRetireTrue() {
-        VoitureRequestDto dto = new VoitureRequestDto("Wongwong Chien","Parfait pour aller à la plage" , "bleu comme la mer", 4, TypeCarburant.ESSENCE, NombrePortesVoiture.TROIS, Transmission.MANUELLE,true, 2, TypeVoiture.FAMILIALE,100.0, null,true, true);
+        VoitureRequestDto dto = new VoitureRequestDto("Renault Twingo","4" , "Jaune", 4, TypeCarburant.ESSENCE, NombrePortesVoiture.TROIS, Transmission.MANUELLE,true, 2, TypeVoiture.FAMILIALE,100.0, null,true, true);
         assertThrows(VehiculeException.class, () -> service.ajouter(dto));
     }
 
@@ -199,9 +206,9 @@ class VoitureServiceImplTest {
         voitureApresEnreg.setId(0);
         Voiture voitureAvantEnreg = new Voiture();
         voitureAvantEnreg.setId(0);
-        voitureAvantEnreg.setMarque("Wouf Chien");
-        voitureAvantEnreg.setModele("Parfait pour aller acheter les jouets");
-        voitureAvantEnreg.setCouleur("rose");
+        voitureAvantEnreg.setMarque("Honda");
+        voitureAvantEnreg.setModele("e:HEV");
+        voitureAvantEnreg.setCouleur("Rose");
         voitureAvantEnreg.setNombrePlaces(12);
         voitureAvantEnreg.setTypeCarburant(TypeCarburant.HYBRIDE);
         voitureAvantEnreg.setNombrePortes(NombrePortesVoiture.CINQ);
@@ -217,7 +224,7 @@ class VoitureServiceImplTest {
         Mockito.when(daoMock.save(voitureAvantEnreg)).thenReturn(voitureApresEnreg);
         Mockito.when(mapperMock.toVoitureResponseAdminDto(voitureApresEnreg)).thenReturn(voitureResponseAdminDto);
         assertSame(voitureResponseAdminDto, service.ajouter(voitureRequestDto));
-        assertEquals(List.of(Permis.D1), voitureAvantEnreg.getPermis());
+        assertEquals(Permis.D1, voitureAvantEnreg.getPermis());
 
     }
     @DisplayName("Test de la méthode ajouter(avec nombrePlaces<9), la voiture enregistrée a un permis B")
@@ -228,9 +235,9 @@ class VoitureServiceImplTest {
         Voiture voitureApresEnreg = creerVoiture();
         Voiture voitureAvantEnreg = new Voiture();
         voitureAvantEnreg.setId(0);
-        voitureAvantEnreg.setMarque("Wongwong Chien");
-        voitureAvantEnreg.setModele( "Parfait pour aller à la plage");
-        voitureAvantEnreg.setCouleur("bleu comme la mer");
+        voitureAvantEnreg.setMarque("Renault Twingo");
+        voitureAvantEnreg.setModele( "4");
+        voitureAvantEnreg.setCouleur("Jaune");
         voitureAvantEnreg.setNombrePlaces(4);
         voitureAvantEnreg.setTypeCarburant(TypeCarburant.ESSENCE);
         voitureAvantEnreg.setNombrePortes(NombrePortesVoiture.TROIS);
@@ -246,7 +253,7 @@ class VoitureServiceImplTest {
         Mockito.when(daoMock.save(voitureAvantEnreg)).thenReturn(voitureApresEnreg);
         Mockito.when(mapperMock.toVoitureResponseAdminDto(voitureApresEnreg)).thenReturn(voitureResponseAdminDto);
         assertSame(voitureResponseAdminDto, service.ajouter(voitureRequestDto));
-        assertEquals(List.of(Permis.B), voitureAvantEnreg.getPermis());
+        assertEquals(Permis.B, voitureAvantEnreg.getPermis());
 
     }
 
@@ -406,17 +413,50 @@ class VoitureServiceImplTest {
     @Test
     void testSupprimerAvecIdExistePas(){
         Mockito.when(daoMock.existsById(1L)).thenReturn(false);
-        EntityNotFoundException ex = assertThrows(EntityNotFoundException.class, ()->service.supprimer(1L));
+        EntityNotFoundException ex = assertThrows(EntityNotFoundException.class, ()->service.supprimerOuRetire(1L));
         assertEquals("POM POM POM, id non présent", ex.getMessage());
     }
 
     @DisplayName("""
-            Test la méthode supprimer(ok), delete() est appelé
+            Test la méthode supprimer(avec une voiture associée à des locations), retire devient true, actif devient false, save() est appelé
+            """)
+    @Test
+    void testDesativerAvecVoitureAssocieeDesLocations(){
+        Voiture voitureEnreg = new Voiture();
+        voitureEnreg.setId(1);
+        voitureEnreg.setMarque("Renault Twingo");
+        voitureEnreg.setModele( "4");
+        voitureEnreg.setCouleur("Jaune");
+        voitureEnreg.setNombrePlaces(4);
+        voitureEnreg.setTypeCarburant(TypeCarburant.ESSENCE);
+        voitureEnreg.setNombrePortes(NombrePortesVoiture.TROIS);
+        voitureEnreg.setTransmission(Transmission.MANUELLE);
+        voitureEnreg.setClimatisation(true);
+        voitureEnreg.setNombreBagages(2);
+        voitureEnreg.setTypeVoiture(TypeVoiture.FAMILIALE);
+        voitureEnreg.setPermis(Permis.B);
+        voitureEnreg.setTarif(100.0);
+        voitureEnreg.setKilometrage(3000);
+        voitureEnreg.setActif(false);
+        voitureEnreg.setRetire(true);
+        Optional<Voiture> optVoiture = Optional.of(creerVoiture());
+        Mockito.when(daoMock.existsById(1L)).thenReturn(true);
+        Mockito.when(daoMock.findById(1L)).thenReturn(optVoiture);
+        Mockito.when(daoLocationMock.findByVehicule(optVoiture.get())).thenReturn(List.of(locationMock));
+        service.supprimerOuRetire(1L);
+        Mockito.verify(daoMock).save(voitureEnreg);
+    }
+
+    @DisplayName("""
+            Test la méthode supprimer(avec une voiture non associée à des locations), delete() est appelé
             """)
     @Test
     void testSupprimerOk(){
+        Optional<Voiture> optVoiture = Optional.of(creerVoiture());
         Mockito.when(daoMock.existsById(1L)).thenReturn(true);
-        service.supprimer(1L);
+        Mockito.when(daoMock.findById(1L)).thenReturn(optVoiture);
+        Mockito.when(daoLocationMock.findByVehicule(optVoiture.get())).thenReturn(List.of());
+        service.supprimerOuRetire(1L);
         Mockito.verify(daoMock).deleteById(1L);
     }
 
@@ -453,18 +493,18 @@ class VoitureServiceImplTest {
     @DisplayName("Test la méthode modifier(avec marque blank) exception levée")
     @Test
     void testModifierAvecMarqueBlank(){
-        VoitureRequestDto voitureRequestDto = new VoitureRequestDto("   \n ", null, "bleu comme la mer", null, null, null,null,null, null, null,null, null,null, null);
+        VoitureRequestDto voitureRequestDto = new VoitureRequestDto("   \n ", null, "Jaune", null, null, null,null,null, null, null,null, null,null, null);
         Voiture voitureAModifier = creerVoiture();
         Voiture nouvelle = new Voiture();
         nouvelle.setMarque("   \n ");
-        nouvelle.setCouleur("bleu comme la mer");
+        nouvelle.setCouleur("Jaune");
         Optional<Voiture> optVoiture = Optional.of(voitureAModifier);
         Mockito.when(daoMock.findById(1L)).thenReturn(optVoiture);
         Mockito.when(mapperMock.toVoiture(voitureRequestDto)).thenReturn(nouvelle);
         VehiculeException ex = assertThrows(VehiculeException.class, ()->service.modifier(1L, voitureRequestDto));
         assertEquals("la marque de la voiture est absente", ex.getMessage());
     }
-   //TODO : les tests remplacer à finir
+   //TODO : ici ce sont les autres tests pour la méthode verifierEtRemplacer
     @DisplayName("""
             Test la méthode modifier(ok) qui renvoyer un objet voitureResponseAdminDto, save() est appelé
             """)
@@ -472,13 +512,13 @@ class VoitureServiceImplTest {
     void testModifierOk(){
         Voiture voitureAModifier = creerVoiture2();
         Optional<Voiture> optVoiture = Optional.of(voitureAModifier);
-        VoitureRequestDto voitureRequestDto = new VoitureRequestDto(null, null, "bleu comme la mer", 5, null,null, null,false, null, null,null, null,null, null);
+        VoitureRequestDto voitureRequestDto = new VoitureRequestDto(null, null, "Jaune", 5, null,null, null,false, null, null,null, null,null, null);
         Voiture nouvelle = new Voiture();
         nouvelle.setId(2);
-        nouvelle.setCouleur("bleu comme la mer");
+        nouvelle.setCouleur("Jaune");
         nouvelle.setNombrePlaces(5);
         nouvelle.setClimatisation(false);
-        VoitureResponseAdminDto voitureResponseAdminDto = new VoitureResponseAdminDto(2,"Wouf Chien","Parfait pour aller acheter les jouets","bleu comme la mer",TypeCarburant.HYBRIDE,5,NombrePortesVoiture.CINQ,Transmission.AUTO,false,100,TypeVoiture.LUXE,List.of(Permis.B),200.0, 1000, true, false);
+        VoitureResponseAdminDto voitureResponseAdminDto = new VoitureResponseAdminDto(2,"Honda","e:HEV","Jaune",TypeCarburant.HYBRIDE,5,NombrePortesVoiture.CINQ,Transmission.AUTO,false,100,TypeVoiture.LUXE,Permis.B,200.0, 1000, true, false);
         Mockito.when(daoMock.findById(2L)).thenReturn(optVoiture);
         Mockito.when(mapperMock.toVoiture(voitureRequestDto)).thenReturn(nouvelle);
         Mockito.when(mapperMock.toVoitureResponseAdminDto(nouvelle)).thenReturn(voitureResponseAdminDto);
@@ -491,9 +531,9 @@ class VoitureServiceImplTest {
 
     private static VoitureRequestDto creerVoitureRequestDto(){
         return new VoitureRequestDto(
-                "Wongwong Chien",
-                "Parfait pour aller à la plage",
-                "bleu comme la mer",
+                "Renault Twingo",
+                "4",
+                "Jaune",
                 4,
                 TypeCarburant.ESSENCE,
                 NombrePortesVoiture.TROIS,
@@ -509,9 +549,9 @@ class VoitureServiceImplTest {
     }
     private static VoitureRequestDto creerVoitureRequestDto2(){
         return new VoitureRequestDto(
-                "Wouf Chien",
-                "Parfait pour aller acheter les jouets",
-                "rose",
+                "Honda",
+                "e:HEV",
+                "Rose",
                 12,
                 TypeCarburant.HYBRIDE,
                 NombrePortesVoiture.CINQ,
@@ -529,9 +569,9 @@ class VoitureServiceImplTest {
         private static Voiture creerVoiture(){
             Voiture voiture = new Voiture();
             voiture.setId(1);
-            voiture.setMarque("Wongwong Chien");
-            voiture.setModele( "Parfait pour aller à la plage");
-            voiture.setCouleur("bleu comme la mer");
+            voiture.setMarque("Renault Twingo");
+            voiture.setModele( "4");
+            voiture.setCouleur("Jaune");
             voiture.setNombrePlaces(4);
             voiture.setTypeCarburant(TypeCarburant.ESSENCE);
             voiture.setNombrePortes(NombrePortesVoiture.TROIS);
@@ -539,7 +579,7 @@ class VoitureServiceImplTest {
             voiture.setClimatisation(true);
             voiture.setNombreBagages(2);
             voiture.setTypeVoiture(TypeVoiture.FAMILIALE);
-            voiture.setPermis(List.of(Permis.B));
+            voiture.setPermis(Permis.B);
             voiture.setTarif(100.0);
             voiture.setKilometrage(3000);
             voiture.setActif(true);
@@ -549,9 +589,9 @@ class VoitureServiceImplTest {
     private static Voiture creerVoiture2(){
         Voiture voiture = new Voiture();
         voiture.setId(2);
-        voiture.setMarque("Wouf Chien");
-        voiture.setModele("Parfait pour aller acheter les jouets");
-        voiture.setCouleur("rose");
+        voiture.setMarque("Honda");
+        voiture.setModele("e:HEV");
+        voiture.setCouleur("Rose");
         voiture.setNombrePlaces(12);
         voiture.setTypeCarburant(TypeCarburant.HYBRIDE);
         voiture.setNombrePortes(NombrePortesVoiture.CINQ);
@@ -559,7 +599,7 @@ class VoitureServiceImplTest {
         voiture.setClimatisation(true);
         voiture.setNombreBagages(100);
         voiture.setTypeVoiture(TypeVoiture.LUXE);
-        voiture.setPermis(List.of(Permis.D1));
+        voiture.setPermis(Permis.D1);
         voiture.setTarif(200.0);
         voiture.setKilometrage(1000);
         voiture.setActif(true);
@@ -570,9 +610,9 @@ class VoitureServiceImplTest {
     private static Voiture creerVoiture3(){
         Voiture voiture = new Voiture();
         voiture.setId(3);
-        voiture.setMarque("Lala Chien");
-        voiture.setModele("Parfait pour aller acheter les croquettes");
-        voiture.setCouleur( "marron comme des croquettes");
+        voiture.setMarque("Renault Twingo 2");
+        voiture.setModele("3");
+        voiture.setCouleur( "Noir");
         voiture.setNombrePlaces(12);
         voiture.setTypeCarburant(TypeCarburant.HYBRIDE);
         voiture.setNombrePortes(NombrePortesVoiture.CINQ);
@@ -580,7 +620,7 @@ class VoitureServiceImplTest {
         voiture.setClimatisation(true);
         voiture.setNombreBagages(100);
         voiture.setTypeVoiture(TypeVoiture.LUXE);
-        voiture.setPermis(List.of(Permis.D1));
+        voiture.setPermis(Permis.D1);
         voiture.setTarif(200.0);
         voiture.setKilometrage(1000);
         voiture.setActif(false);
@@ -591,9 +631,9 @@ class VoitureServiceImplTest {
     private static Voiture creerVoiture4(){
         Voiture voiture = new Voiture();
         voiture.setId(4);
-        voiture.setMarque("Wangwang Chien");
-        voiture.setModele( "Parfait pour aller chez les grands parents");
-        voiture.setCouleur( "jaune comme du soleil");
+        voiture.setMarque("Honda 2");
+        voiture.setModele( "56");
+        voiture.setCouleur( "Bleu Claire");
         voiture.setNombrePlaces(4);
         voiture.setTypeCarburant(TypeCarburant.HYBRIDE);
         voiture.setNombrePortes(NombrePortesVoiture.CINQ);
@@ -601,7 +641,7 @@ class VoitureServiceImplTest {
         voiture.setClimatisation(true);
         voiture.setNombreBagages(100);
         voiture.setTypeVoiture(TypeVoiture.LUXE);
-        voiture.setPermis(List.of(Permis.B));
+        voiture.setPermis(Permis.B);
         voiture.setTarif(200.0);
         voiture.setKilometrage(1000);
         voiture.setActif(false);
@@ -615,9 +655,9 @@ class VoitureServiceImplTest {
     private static VoitureResponseAdminDto creerVoitureResponseAdminDto(){
         return new VoitureResponseAdminDto(
                 1,
-                "Wongwong Chien",
-                "Parfait pour aller à la plage",
-                "bleu comme la mer",
+                "Renault Twingo",
+                "4",
+                "Jaune",
                 TypeCarburant.ESSENCE,
                 4,
                 NombrePortesVoiture.TROIS,
@@ -625,7 +665,7 @@ class VoitureServiceImplTest {
                 true,
                 2,
                 TypeVoiture.FAMILIALE,
-                List.of(Permis.B),
+                Permis.B,
                 100.0,
                 3000,
                 true,
@@ -634,9 +674,9 @@ class VoitureServiceImplTest {
     private static VoitureResponseAdminDto creerVoitureResponseAdminDto2(){
         return new VoitureResponseAdminDto(
                 2,
-                "Wouf Chien",
-                "Parfait pour aller acheter les jouets",
-                "rose",
+                "Honda",
+                "e:HEV",
+                "Rose",
                 TypeCarburant.HYBRIDE,
                 12,
                 NombrePortesVoiture.CINQ,
@@ -644,7 +684,7 @@ class VoitureServiceImplTest {
                 true,
                 100,
                 TypeVoiture.LUXE,
-                List.of(Permis.D1),
+                Permis.D1,
                 200.0,
                 1000,
                 true,
@@ -654,9 +694,9 @@ class VoitureServiceImplTest {
     private static VoitureResponseAdminDto creerVoitureResponseAdminDto3(){
         return new VoitureResponseAdminDto(
                 3,
-                "Lala Chien",
-                "Parfait pour aller acheter les croquettes",
-                "marron comme des croquettes",
+                "Renault Twingo 2",
+                "3",
+                "Noir",
                 TypeCarburant.HYBRIDE,
                 12,
                 NombrePortesVoiture.CINQ,
@@ -664,7 +704,7 @@ class VoitureServiceImplTest {
                 true,
                 100,
                 TypeVoiture.LUXE,
-                List.of(Permis.D1),
+                Permis.D1,
                 200.0,
                 1000,
                 false,
@@ -674,9 +714,9 @@ class VoitureServiceImplTest {
     private static VoitureResponseAdminDto creerVoitureResponseAdminDto4(){
         return new VoitureResponseAdminDto(
                 4,
-                "Wangwang Chien",
-                "Parfait pour aller chez les grands parents",
-                "jaune comme du soleil",
+                "Honda 2",
+                "56",
+                "Bleu Claire",
                 TypeCarburant.HYBRIDE,
                 4,
                 NombrePortesVoiture.CINQ,
@@ -684,7 +724,7 @@ class VoitureServiceImplTest {
                 true,
                 100,
                 TypeVoiture.LUXE,
-                List.of(Permis.B),
+                Permis.B,
                 200.0,
                 1000,
                 false,

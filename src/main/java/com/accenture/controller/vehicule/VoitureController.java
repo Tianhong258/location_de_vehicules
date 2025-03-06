@@ -113,14 +113,14 @@ public class VoitureController {
      * @return Une réponse HTTP avec le statut HTTP No Content (204).
      */
     @DeleteMapping("/{id}")
-    @Operation(summary = "Supprimer une voiture", description = "Suppression d'une voiture depuis la base de données")
+    @Operation(summary = "Supprimer une voiture", description = "Suppression mise à jour de 'retire = true' d'une voiture depuis la base de données")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Suppression effectuée avec succès"),
-            @ApiResponse(responseCode = "404", description = "Suppression échouée")
+            @ApiResponse(responseCode = "204", description = "Suppression mise à jour de 'retire = true' effectuée avec succès"),
+            @ApiResponse(responseCode = "404", description = "Suppression mise à jour de 'retire = true' échouée")
     })
-    ResponseEntity<Void> supprimer(@PathVariable("id") long id){
+    ResponseEntity<Void> supprimerOuRetirer(@PathVariable("id") long id){
         log.info("La suppression d'une voiture commence avec son id : {}", id);
-        voitureService.supprimer(id);
+        voitureService.supprimerOuRetire(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 

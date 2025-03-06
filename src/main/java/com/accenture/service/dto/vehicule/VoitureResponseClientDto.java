@@ -15,8 +15,8 @@ public record VoitureResponseClientDto(
         Transmission transmission,
         Boolean climatisation,
         Integer nombreBagages,
-        TypeVoiture type,
-        List<Permis> permis,
+        TypeVoiture typeVoiture,
+        Permis permis,
         Double tarif
 ) {
 }

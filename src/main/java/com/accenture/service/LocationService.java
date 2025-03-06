@@ -8,6 +8,6 @@ import java.security.Principal;
 import java.util.List;
 
 public interface LocationService {
-    List<LocationResponseDto> locations();
+    List<LocationResponseDto> trouverToutes();
     LocationResponseDto ajouter(Principal principal, LocationRequestDto locationRequestDto) throws LocationException;
 }

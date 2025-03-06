@@ -36,6 +36,7 @@ public class VehiculeServiceImpl implements VehiculeService{
         this.motoMapper = motoMapper;
         this.locationDao = locationDao;
     }
+
 //    @Override
 //    public VehiculeAdminDto trouverTous(){
 //        List<Vehicule> listeVehicule = vehiculeDao.findAll();
@@ -44,8 +45,6 @@ public class VehiculeServiceImpl implements VehiculeService{
 //        distribuerVehicule(listeVehicule, listeVoiture, listeMoto);
 //        return new VehiculeAdminDto(listeVoiture, listeMoto);
 //    }
-
-
 
     @Override
     public VehiculeAdminDto filtrer(Filtre filtre) {
@@ -82,7 +81,7 @@ public class VehiculeServiceImpl implements VehiculeService{
         List<Vehicule> listePasDispo =
                 locationDao.findAll().stream()
                         .filter(l -> l.getDebut().isBefore(fin) && l.getFin().isAfter(debut))
-                        .map(l->l.getVehicule())
+                        .map(Location::getVehicule)
                         .toList();
         listeVehicule.removeAll(listePasDispo);
         distribuerVehicule(listeVehicule, listeVoiture, listeMoto);
@@ -108,11 +107,11 @@ public class VehiculeServiceImpl implements VehiculeService{
 
     private void distribuerVehiculeEnAdminDto(List<Vehicule> listeVehicule, List<VoitureResponseAdminDto> listeVoiture, List<MotoResponseAdminDto> listeMoto) {
         for(Vehicule v : listeVehicule){
-            if(v instanceof Voiture){
-                listeVoiture.add(voitureMapper.toVoitureResponseAdminDto((Voiture) v));
+            if(v instanceof Voiture voiture){
+                listeVoiture.add(voitureMapper.toVoitureResponseAdminDto(voiture));
             }
-            if(v instanceof Moto){
-                listeMoto.add(motoMapper.toMotoResponseAdminDto((Moto) v));
+            if(v instanceof Moto moto){
+                listeMoto.add(motoMapper.toMotoResponseAdminDto(moto));
             }
         }
     }

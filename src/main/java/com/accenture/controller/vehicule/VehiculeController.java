@@ -27,7 +27,6 @@ public class VehiculeController {
     public VehiculeController(VehiculeService vehiculeService) {
         this.vehiculeService = vehiculeService;
     }
-//TODO : java doc à ajouter
     @GetMapping("/filtrer")
     VehiculeAdminDto filtrer(
             @Parameter(description = "Condition de récupérer") @RequestParam Filtre filtre
@@ -40,8 +39,7 @@ public class VehiculeController {
     VehiculeClientDto rechercherParDate(
             @Parameter(description = "Date du début de réservation") @RequestParam LocalDate debut,
             @Parameter(description = "Date de la fin de réservation") @RequestParam LocalDate fin,
-            Principal principal,
-            @Parameter(description = "Catégorie du véhicule recherché") @RequestParam(required = false)CategorieVehicule categorie
+            @Parameter(description = "Catégorie du véhicule recherché") @RequestParam(required = false) CategorieVehicule categorie
             ){
         log.info("La recherche des véhicules commence avec la catégorie : {}, depuis la date : {} jusqu'à la date : {}", categorie, debut, fin);
         return vehiculeService.rechercherParDate(debut,fin,categorie);

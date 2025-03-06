@@ -1,14 +1,15 @@
 package com.accenture.service.dto.location;
 
 import com.accenture.model.Etat;
+import com.accenture.repository.entity.vehicule.Vehicule;
+import com.accenture.service.dto.utilisateur.ClientResponseDto;
 
 import java.time.LocalDate;
 
 public record LocationResponseDto(
         long id,
-        Integer clientId,
-        String email,
-        Integer vehiculeId,
+        ClientResponseDto client,
+        Vehicule vehicule,
         //Accessoire accessoire,
         LocalDate debut,
         LocalDate fin,

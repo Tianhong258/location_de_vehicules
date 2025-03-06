@@ -50,9 +50,8 @@ public class LocationServiceImpl implements LocationService {
             return locationMapper.toLocationResponseDto(locationEnreg);
     }
 
-
     @Override
-    public List<LocationResponseDto> locations(){
+    public List<LocationResponseDto> trouverToutes(){
         return locationDao.findAll().stream().map(locationMapper::toLocationResponseDto).toList();
 
     }

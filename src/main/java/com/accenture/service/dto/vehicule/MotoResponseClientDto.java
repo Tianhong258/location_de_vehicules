@@ -17,8 +17,8 @@ public record MotoResponseClientDto(
         Double puissance,
         Double hauteurSelle,
         Transmission transmission,
-        TypeMoto type,
-        List<Permis> permis,
+        TypeMoto typeMoto,
+        Permis permis,
         Double tarif
 
 ) {

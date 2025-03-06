@@ -44,10 +44,10 @@ public class AdminController {
     ResponseEntity<Void> ajouter(@RequestBody @Valid AdminRequestDto adminRequestDto){
         log.info("L'ajoute de l'admin commence avec son email : {}", adminRequestDto.email());
         AdminResponseDto adminEnreg = adminService.ajouter(adminRequestDto);
-        URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .path("/{id}")
-                .buildAndExpand(adminEnreg.id())
+        URI location = ServletUriComponentsBuilder//construire un uri
+                .fromCurrentRequest()//l'uri actuel (localhost 8080 admin)
+                .path("/{id}")//ajouter dynamique
+                .buildAndExpand(adminEnreg.id())//remplacer {id} par l'id de cet admin
                 .toUri();
         return ResponseEntity.created(location).build();
     }
@@ -60,7 +60,7 @@ public class AdminController {
     @GetMapping
     @Operation(summary = "Récupérer tous les administrateurs", description ="Récupération de tous les administrateurs depuis la base de données")
     @ApiResponse(responseCode = "200", description = "Récupération effectuée avec succès")
-    List<AdminResponseDto> admins(){
+    List<AdminResponseDto> trouverTous(){
         log.info("La récupération de tous les admins commence");
         return adminService.trouverTous();
     }

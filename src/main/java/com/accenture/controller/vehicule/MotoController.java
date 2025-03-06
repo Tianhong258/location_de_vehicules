@@ -113,14 +113,14 @@ public class MotoController {
      */
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Supprimer une moto", description = "Suppression d'une moto depuis la base de données")
+    @Operation(summary = "Supprimer ou retirer une moto", description = "Suppression ou mise à jour de 'retire = true' d'une moto depuis la base de données")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", description = "Suppression effectuée avec succès"),
-            @ApiResponse(responseCode = "404", description = "Suppression échouée")
+            @ApiResponse(responseCode = "204", description = "Suppression ou mise à jour de 'retire = true' effectuée avec succès"),
+            @ApiResponse(responseCode = "404", description = "Suppression ou mise à jour de 'retire = true' échouée")
     })
-    ResponseEntity<Void> supprimer(@PathVariable("id") long id) {
+    ResponseEntity<Void> supprimerOuRetirer(@PathVariable("id") long id) {
         log.info("La suppression de la moto commence avec son id : {}", id);
-        motoService.supprimer(id);
+        motoService.supprimerOuRetirer(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 

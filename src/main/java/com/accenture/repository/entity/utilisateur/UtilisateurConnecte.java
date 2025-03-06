@@ -1,6 +1,5 @@
 package com.accenture.repository.entity.utilisateur;
 
-
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;

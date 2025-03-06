@@ -10,20 +10,20 @@ import jakarta.validation.constraints.*;
 @Schema(description = "Détails de la demande de voiture")
 public record VoitureRequestDto(
 
-        @Schema(description = "Marque de la voiture", example = "Wouf Wouf")
+        @Schema(description = "Marque de la voiture", example = "Renault Twingo")
         @NotBlank(message = "La marque est obligatoire")
         String marque,
 
 
-        @Schema(description = "Modèle de la voiture", example = "Parfait pour acheter des croquettes")
+        @Schema(description = "Modèle de la voiture", example = "4")
         @NotBlank(message = "Le modèle est obligatoire")
         String modele,
 
-        @Schema(description = "Couleur de la voiture", example = "Marron comme des croquettes")
+        @Schema(description = "Couleur de la voiture", example = "Jaune")
         @NotBlank(message = "La couleur est obligatoire")
         String couleur,
 
-        @Schema(description = "Nombre de places de la voiture", example = "6")
+        @Schema(description = "Nombre de places de la voiture", example = "4")
         @NotNull(message = "Le nombre de places est obligatoire")
         @Min(value = 1, message = "Le nombre de places doit être un entier positif")
         @Max(value = 16, message = "Le nombre de places doit être un entier inférieur à 17")
@@ -55,7 +55,7 @@ public record VoitureRequestDto(
 
         @Schema(description = "Type de la voiture", example = "SUV")
         @NotNull(message = "Le type de voiture est obligatoire")
-        TypeVoiture type,
+        TypeVoiture typeVoiture,
 
         @Schema(description = "Tarif par jour de location de la voiture", example = "59.99")
         @NotNull(message = "Le tarif par jour est obligatoire")

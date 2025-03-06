@@ -28,7 +28,7 @@ public class Voiture extends Vehicule {
     @Enumerated(EnumType.STRING)
     private TypeVoiture typeVoiture;
     @Enumerated(EnumType.STRING)
-    private List<Permis> permis;
+    private Permis permis;
     
 
 }

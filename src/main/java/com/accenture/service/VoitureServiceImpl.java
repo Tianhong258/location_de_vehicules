@@ -3,7 +3,9 @@ package com.accenture.service;
 import com.accenture.exception.VehiculeException;
 import com.accenture.model.Filtre;
 import com.accenture.model.Permis;
+import com.accenture.repository.LocationDao;
 import com.accenture.repository.VoitureDao;
+import com.accenture.repository.entity.vehicule.Vehicule;
 import com.accenture.repository.entity.vehicule.Voiture;
 import com.accenture.service.dto.vehicule.VoitureRequestDto;
 import com.accenture.service.dto.vehicule.VoitureResponseAdminDto;
@@ -19,11 +21,13 @@ import java.util.Optional;
 public class VoitureServiceImpl implements VoitureService {
     private final VoitureDao voitureDao;
     private final VoitureMapper voitureMapper;
+    private final LocationDao locationDao;
     public static final String ID_NON_PRESENT = "POM POM POM, id non présent";
 
-    public VoitureServiceImpl(VoitureDao voitureDao, VoitureMapper voitureMapper) {
+    public VoitureServiceImpl(VoitureDao voitureDao, VoitureMapper voitureMapper, LocationDao locationDao) {
         this.voitureDao = voitureDao;
         this.voitureMapper = voitureMapper;
+        this.locationDao = locationDao;
     }
 
     /**
@@ -92,18 +96,24 @@ public class VoitureServiceImpl implements VoitureService {
     }
 
     /**
-     * <p>La méthode <code>supprimer</code> permet de supprimer une voiture en fonction de son id.</p>
+     * <p>La méthode <code>supprimer</code> permet de supprimer ou retirer une voiture en fonction de son id.</p>
      *
-     * @param id L'id de la voiture à supprimer.
+     * @param id L'id de la voiture à supprimer ou retirer.
      * @throws EntityNotFoundException Si la voiture avec l'id spécifié n'est pas trouvée.
      */
     @Override
-    public void supprimer(long id) throws EntityNotFoundException {
-        if (voitureDao.existsById(id))
-            voitureDao.deleteById(id);
+    public void supprimerOuRetire(long id) throws EntityNotFoundException {
+        if (voitureDao.existsById(id)){
+            Voiture voiture = voitureDao.findById(id).orElseThrow();
+            if(!locationDao.findByVehicule(voiture).isEmpty()){
+                voiture.setRetire(true);
+                voiture.setActif(false);
+                voitureDao.save(voiture);
+            }
+            else voitureDao.deleteById(id);
+        }
         else
             throw new EntityNotFoundException(ID_NON_PRESENT);
-        //TODO: si y a pas de location, fait ceci, sinon, mettre le retire en true
     }
     /**
      * <p>La méthode <code>modifier</code> permet de modifier les informations d'une voiture existante.</p>
@@ -131,9 +141,9 @@ public class VoitureServiceImpl implements VoitureService {
 
     private static void genererPermisVoiture(Voiture voiture) {
         if (voiture.getNombrePlaces() > 9 && voiture.getNombrePlaces() <=16 )
-            voiture.setPermis(List.of(Permis.D1));
+            voiture.setPermis(Permis.D1);
         if (voiture.getNombrePlaces() > 0 && voiture.getNombrePlaces() <= 9)
-            voiture.setPermis(List.of(Permis.B));
+            voiture.setPermis(Permis.B);
     }
 
     private static void verifierEtRemplacer(Voiture nouvelle, Voiture voitureExiste) {
@@ -145,7 +155,6 @@ public class VoitureServiceImpl implements VoitureService {
         verifierRemplacerClimaType(nouvelle, voitureExiste);
         verifierRemplacerBagagesTarifKilo(nouvelle, voitureExiste);
         verifierRemplacerActifRetire(nouvelle, voitureExiste);
-        //TODO : vérifier Permis ou pas
     }
 
 
@@ -157,7 +166,6 @@ public class VoitureServiceImpl implements VoitureService {
         verifierTransClimaBagages(dto);
         verifierTypeTarifKilo(dto);
         verifierActifRetire(dto);
-        //TODO : vérifier Permis ou pas, pourquoi les Integer ne peuvent pas être null ?
     }
 
     private static void verifierRemplacerActifRetire(Voiture nouvelle, Voiture voitureExiste) {
@@ -243,7 +251,7 @@ public class VoitureServiceImpl implements VoitureService {
     }
 
     private static void verifierTypeTarifKilo(VoitureRequestDto dto) {
-        if (dto.type() == null)
+        if (dto.typeVoiture() == null)
             throw new VehiculeException("le type de la voiture est absent");
         if (dto.tarif() == null || dto.tarif() < 0)
             throw new VehiculeException("le tarif par jour est absent ou il est négatif");

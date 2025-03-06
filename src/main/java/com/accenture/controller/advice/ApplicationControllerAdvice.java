@@ -2,7 +2,6 @@ package com.accenture.controller.advice;
 
 import com.accenture.exception.*;
 import com.accenture.model.ErreurReponse;
-import com.accenture.repository.entity.location.Location;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;

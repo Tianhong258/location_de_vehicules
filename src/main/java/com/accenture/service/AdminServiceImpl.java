@@ -13,6 +13,8 @@ import java.security.Principal;
 import java.util.List;
 import java.util.regex.Pattern;
 
+
+
 @Service
 public class AdminServiceImpl implements AdminService{
 
@@ -38,7 +40,7 @@ public class AdminServiceImpl implements AdminService{
     @Override
     public AdminResponseDto ajouter(AdminRequestDto adminRequestDto) throws UtilisateurException {
         verifierAdminRequestDto(adminRequestDto);
-        Admin admin= adminMapper.toAdmin(adminRequestDto);
+        Admin admin = adminMapper.toAdmin(adminRequestDto);
         String passwordChiffre = passwordEncoder.encode(admin.getPassword());
         admin.setPassword(passwordChiffre);
         Admin adminEnreg = adminDao.save(admin);
@@ -151,7 +153,6 @@ public class AdminServiceImpl implements AdminService{
 
 
     private static void verifierAdminRequestDto(AdminRequestDto dto) throws UtilisateurException {
-        //TODO: dateNaissance est bon ou pas
         if (dto == null)
             throw new UtilisateurException("l'adminRequestDto est null");
         if (dto.nom() == null || dto.nom().isBlank())

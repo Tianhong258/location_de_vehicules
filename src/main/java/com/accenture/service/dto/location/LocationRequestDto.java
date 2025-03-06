@@ -31,7 +31,5 @@ public record LocationRequestDto(
         @NotNull(message = "Kilometres parcours est obligatoire")
         @Positive(message = "Kilometre doit être un entier positif")
         Integer kilometrage
-
-
 ) {
 }

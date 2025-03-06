@@ -59,9 +59,9 @@ public class LocationController {
     @GetMapping
     @Operation(summary = "Récupérer toutes les locations", description ="Récupération de toutes les locations depuis la base de données")
     @ApiResponse(responseCode = "200", description = "Récupération effectuée avec succès")
-    List<LocationResponseDto> locations(){
+    List<LocationResponseDto> trouverToutes(){
         log.info("La récupération de toute les locations commence");
-        return locationService.locations();
+        return locationService.trouverToutes();
     }
 
 }

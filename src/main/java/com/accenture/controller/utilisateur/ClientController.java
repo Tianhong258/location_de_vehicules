@@ -75,7 +75,7 @@ public class ClientController {
     @Operation(summary = "Récupérer tous les clients", description ="Récupération de tous les clients depuis la base de données")
     @ApiResponse(responseCode = "200", description = "Récupération effectuée avec succès")
 
-    List<ClientResponseDto> clients(){
+    List<ClientResponseDto> trouverTous(){
         log.info("La récupération de tous les clients commence");
         return clientService.trouverTous();
     }

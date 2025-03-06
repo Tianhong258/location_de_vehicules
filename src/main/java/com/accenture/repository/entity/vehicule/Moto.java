@@ -34,7 +34,7 @@ public class Moto extends Vehicule {
     private TypeMoto typeMoto;
     
     @Enumerated(EnumType.STRING)
-    private List<Permis> permis;
+    private Permis permis;
 
 
 
